@@ -20,9 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Created by vthha on 4/2/2017.
- */
 
 public class MapsHandle {
     private Context mContext;

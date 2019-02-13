@@ -1,12 +1,18 @@
 package com.travelalarm.Data;
 
-public class Route {
+import java.io.Serializable;
+
+public class Route implements Serializable {
     private int id;
     private Double latitude;
     private Double longitude;
+    private String name;
     private String info;
     private int isEnable;
     private Double distance;
+    private int minDistance;
+    private String ringtone;
+    private String ringtonePath;
 
     public int getId() {
         return id;
@@ -61,6 +67,44 @@ public class Route {
         this.distance = distance;
         return this;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Route setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public int getMinDistance() {
+        return minDistance;
+    }
+
+    public Route setMinDistance(int minDistance) {
+        this.minDistance = minDistance;
+        return this;
+    }
+
+    public String getRingtone() {
+        return ringtone;
+    }
+
+    public Route setRingtone(String ringtone) {
+        this.ringtone = ringtone;
+        return this;
+    }
+
+    public String getRingtonePath() {
+        return ringtonePath;
+    }
+
+    public Route setRingtonePath(String ringtonePath) {
+        this.ringtonePath = ringtonePath;
+        return this;
+    }
+
+
 
     @Override
     public String toString() {
