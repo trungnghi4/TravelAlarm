@@ -1,6 +1,8 @@
-package com.travelalarm;
+package com.travelalarm.Fragment;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -11,12 +13,15 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -28,25 +33,39 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.travelalarm.BackgroundService;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
+import com.travelalarm.GPSTracker;
+import com.travelalarm.MapsHandle;
+import com.travelalarm.R;
+import com.travelalarm.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity {
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
+public class MapsFragment extends Fragment {
+
+    MapView mMapView;
     private GoogleMap mMap;
     private ProgressDialog mProgress;
+    private Context context;
 
     private MapsHandle mapsHandle;
     private GPSTracker gps;
 
     private Location mCurrentDestination;
-    private String mDestinationInfo = "";
+    private static String mDestinationInfo = "";
     private double currentDistance;
 
     public static TextView distanceTextView;
@@ -55,45 +74,60 @@ public class MapsActivity extends AppCompatActivity {
 
     private Intent intentService;
 
-    public static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     public static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
+    public static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     private DatabaseHelper dbHelper;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        mProgress = new ProgressDialog(this);
+    public MapsFragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
+        context = rootView.getContext();
+
+        mProgress = new ProgressDialog(context);
         mProgress.setTitle("Loading map ...");
         mProgress.setMessage("Please wait...");
         mProgress.setCancelable(true);
         mProgress.show();
 
-        dbHelper = new DatabaseHelper(this);
+        dbHelper = new DatabaseHelper(context);
         final Route route = dbHelper.getRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE + " WHERE isEnable = 1");
 
         //set default value in the app's preferences
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
 
-        SupportMapFragment mapFragment
-                = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
 
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
+        mMapView = (MapView) rootView.findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+
+        mMapView.onResume(); // needed to get the map to display immediately
+
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onMapReady(GoogleMap googleMap) {
-                onMyMapReady(googleMap);
+            public void onMapReady(GoogleMap mMap) {
+                onMyMapReady(mMap);
             }
         });
 
-        destinationTextView = (TextView) findViewById(R.id.destination);
-        distanceTextView = (TextView) findViewById(R.id.distance);
-        switchButton = (Switch) findViewById(R.id.switchAlarm);
+        destinationTextView = (TextView) rootView.findViewById(R.id.destination);
+        distanceTextView = (TextView) rootView.findViewById(R.id.distance);
+        switchButton = (Switch) rootView.findViewById(R.id.switchAlarm);
 
-        intentService = new Intent(MapsActivity.this, BackgroundService.class);
+        intentService = new Intent(context, BackgroundService.class);
 
         if(route != null) {
             Location location = new Location(LocationManager.GPS_PROVIDER);
@@ -107,7 +141,7 @@ public class MapsActivity extends AppCompatActivity {
             distanceTextView.setText("Khoảng cách: " + route.getDistance() + "m");
             if(route.getIsEnable() == 1) {
                 switchButton.setChecked(true);
-                startService(intentService);
+                context.startService(intentService);
             }
             Log.d("MainActivityAlarm", route.toString());
         } else
@@ -122,29 +156,31 @@ public class MapsActivity extends AppCompatActivity {
 
                 Route routeEnable = dbHelper.getRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE + " WHERE isEnable = 1");
                 if(isChecked) {
-                    Toast.makeText(MapsActivity.this, "Đã thiết lập báo thức", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Đã thiết lập báo thức", Toast.LENGTH_SHORT).show();
                     if(routeEnable == null)
                         addRouteToDatabase(mDestinationInfo, mCurrentDestination.getLatitude(), mCurrentDestination.getLongitude());
 
-                    startService(intentService);
+                    context.startService(intentService);
 
                 } else {
-                    Toast.makeText(MapsActivity.this, "Đã hủy thiết lập báo thức", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Đã hủy thiết lập báo thức", Toast.LENGTH_SHORT).show();
                     if(routeEnable != null) {
                         routeEnable.setIsEnable(0);
                         dbHelper.updateRoute(routeEnable);
                     }
-                    stopService(intentService);
+                    context.stopService(intentService);
                 }
             }
         });
+
+        return rootView;
     }
 
     //su kien khi map da load xong
     //thiet dat cac thong so va su kien click tren ban do de hien thong tin diem da click
     private void onMyMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mapsHandle = new MapsHandle(this, mMap);
+        mapsHandle = new MapsHandle(context, mMap);
 
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
@@ -174,9 +210,9 @@ public class MapsActivity extends AppCompatActivity {
         //ask permission if API >= 23
         if (Build.VERSION.SDK_INT >= 23) {
             int accessCoarsePermission
-                    = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION);
+                    = ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
             int accessFinePermission
-                    = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+                    = ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION);
 
             if (accessCoarsePermission != PackageManager.PERMISSION_GRANTED
                     || accessFinePermission != PackageManager.PERMISSION_GRANTED) {
@@ -185,7 +221,7 @@ public class MapsActivity extends AppCompatActivity {
                         android.Manifest.permission.ACCESS_FINE_LOCATION};
 
                 //request permission
-                ActivityCompat.requestPermissions(this, permissions,
+                ActivityCompat.requestPermissions(getActivity(), permissions,
                         REQUEST_ID_ACCESS_COURSE_FINE_LOCATION);
 
                 return;
@@ -208,13 +244,13 @@ public class MapsActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
-                    Toast.makeText(this, "Permission granted!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Permission granted!", Toast.LENGTH_LONG).show();
                     this.showMyLocation();
                     mapsHandle.setMyLocationEnable(true);
                 }
                 //user don't allow
                 else {
-                    Toast.makeText(this, "Permission denied!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Permission denied!", Toast.LENGTH_LONG).show();
                 }
                 break;
             }
@@ -224,7 +260,7 @@ public class MapsActivity extends AppCompatActivity {
     //hien thi dia diem hien tai khi moi vua load xong ban do
     private void showMyLocation() {
 
-        gps = new GPSTracker(MapsActivity.this);
+        gps = new GPSTracker(context);
 
         if(gps.isCanGetLocation()) {
             LatLng latLng = new LatLng(gps.getLatitude(), gps.getLongitude());
@@ -234,35 +270,6 @@ public class MapsActivity extends AppCompatActivity {
         } else {
             gps.showSettingsAlert();
             gps.getLocation();
-        }
-    }
-
-    //hien thi cong cu search autocomplete
-    public void onMapSearch() {
-        try {
-            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder().setCountry("VN").build();
-            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                    .setFilter(typeFilter).build(MapsActivity.this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    //sau khi search tra ve ket qua gan marker cho diem do
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if(resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                LatLng latLng = place.getLatLng();
-                mDestinationInfo = place.getName().toString();
-
-                addDestinationMarker(latLng);
-            } else if(resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-            } else if(resultCode == RESULT_CANCELED) {
-            }
         }
     }
 
@@ -293,7 +300,7 @@ public class MapsActivity extends AppCompatActivity {
             destinationTextView.setText(mDestinationInfo);
             mCurrentDestination = searchLocation;
         } else {
-            Toast.makeText(this, "Chưa lấy được vị trí hiện tại", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Chưa lấy được vị trí hiện tại", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -311,10 +318,39 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main, menu);
     }
 
     @Override
@@ -323,13 +359,42 @@ public class MapsActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intentSettings = new Intent(MapsActivity.this, SettingsActivity.class);
+            Intent intentSettings = new Intent(context, SettingsActivity.class);
             startActivity(intentSettings);
         } else {
             onMapSearch();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
+    //hien thi cong cu search autocomplete
+    public void onMapSearch() {
+        try {
+            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder().setCountry("VN").build();
+            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                    .setFilter(typeFilter).build(getActivity());
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    //sau khi search tra ve ket qua gan marker cho diem do
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if(resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(context, data);
+                LatLng latLng = place.getLatLng();
+                mDestinationInfo = place.getName().toString();
+
+                addDestinationMarker(latLng);
+            } else if(resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(context, data);
+            } else if(resultCode == RESULT_CANCELED) {
+            }
+        }
+    }
 }

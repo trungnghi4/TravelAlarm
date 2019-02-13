@@ -14,10 +14,6 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-/**
- * Created by vthha on 4/2/2017.
- */
-//handle current position
 public class GPSTracker extends Service implements LocationListener {
     @Nullable
 

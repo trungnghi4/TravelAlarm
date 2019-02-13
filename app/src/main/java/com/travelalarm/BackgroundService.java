@@ -1,5 +1,8 @@
 package com.travelalarm;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -7,24 +10,27 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
+import android.widget.Toast;
+
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.travelalarm.Data.DatabaseHelper;
+import com.travelalarm.Data.Route;
 
-/**
- * Created by HongHa on 4/1/2017.
- */
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class BackgroundService extends Service implements LocationListener,
         GoogleApiClient.ConnectionCallbacks,
@@ -35,13 +41,11 @@ public class BackgroundService extends Service implements LocationListener,
     private Location mDestination;
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
-    private boolean isRinging;
-    private MediaPlayer mediaPlayer;
     private String minDistance;
-    private String ringtone;
-    private int resId;
 
     private SharedPreferences sharedPreferences;
+    private DatabaseHelper dbHelper = new DatabaseHelper(this);
+    private Route route;
 
     public BackgroundService(){}
 
@@ -57,37 +61,33 @@ public class BackgroundService extends Service implements LocationListener,
         buildGoogleApiClient();
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        ringtone = sharedPreferences.getString("pref_ringtone", "");
         minDistance = sharedPreferences.getString("pref_minDistance", "");
-        Log.d("BackgroundService", "ringtone name: " + ringtone);
 
         // register listener for SharedPreferences changes
         PreferenceManager.getDefaultSharedPreferences(this).
                 registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
 
-        resId = this.getResources().getIdentifier(ringtone, "raw", this.getPackageName());
-        mediaPlayer = MediaPlayer.create(this, resId);
-        mediaPlayer.setLooping(true);
+        route = dbHelper.getRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE + " WHERE isEnable = 1");
+        if(route != null) {
+            Location searchLocation = new Location(LocationManager.GPS_PROVIDER);
+            searchLocation.setLatitude(route.getLatitude());
+            searchLocation.setLongitude(route.getLongitude());
+            mDestination = searchLocation;
+        }
 
-        mDestination = MapsActivity.mDestination;
-        isRinging = false;
+        Notification.Builder noti = new Notification.Builder(this)
+                .setContentTitle("Alarm Travel")
+                .setContentText(route.getInfo())
+                .setSmallIcon(R.drawable.logo1);
+
+        startForeground(1, noti.build());
     }
 
     private SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                    if(key.equals("pref_ringtone")) {
-                        ringtone = sharedPreferences.getString(key, "");
-                        resId = BackgroundService.this.getResources().getIdentifier(ringtone, "raw",
-                                BackgroundService.this.getPackageName());
-                        if(mediaPlayer.isPlaying()) {
-                            mediaPlayer.stop();
-                            isRinging = false;
-                        }
-                        mediaPlayer = MediaPlayer.create(BackgroundService.this, resId);
-                        mediaPlayer.setLooping(true);
-                    } else if(key.equals("pref_minDistance")) {
+                    if(key.equals("pref_minDistance")) {
                         minDistance = sharedPreferences.getString(key, "");
                     }
                 }
@@ -95,7 +95,7 @@ public class BackgroundService extends Service implements LocationListener,
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return  START_NOT_STICKY;
+        return  START_STICKY;
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -127,18 +127,37 @@ public class BackgroundService extends Service implements LocationListener,
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
+
         if(mDestination != null) {
             //if current position close to destination position, ring alarm
             //Toast.makeText(this, "Distance: " + mLastLocation.distanceTo(mDestination), Toast.LENGTH_SHORT).show();
-            MapsActivity.distanceTextView.setText("Khoảng cách: " + mLastLocation.distanceTo(mDestination) + "m");
-            Log.d("Service", "Updating... " + mLastLocation.distanceTo(mDestination) + "m");
-            if(mLastLocation.distanceTo(mDestination) < Integer.parseInt(minDistance) && !isRinging) {
+            //MainActivity.distanceTextView.setText("Khoảng cách: " + mLastLocation.distanceTo(mDestination) + "m");
+            //Log.d("Service", "Updating... " + mLastLocation.distanceTo(mDestination) + "m");
+            if(mLastLocation.distanceTo(mDestination) < Integer.parseInt(minDistance)) {
                 //alarm ringing
-                mediaPlayer.start();
-                isRinging = true;
                 PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
                 PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
                 wakeLock.acquire();
+
+                try {
+                    if(route != null) {
+                        route.setIsEnable(0);
+                        dbHelper.updateRoute(route);
+
+                        Intent intent = new Intent(this, AlarmActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("info", route.getInfo());
+                        startActivity(intent);
+                        stopSelf();
+                    }
+                    else {
+                        Toast.makeText(this, "route null", Toast.LENGTH_SHORT).show();
+                    }
+
+                }catch (Exception ex) {
+                    Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
             }
         }
     }
@@ -167,8 +186,23 @@ public class BackgroundService extends Service implements LocationListener,
     public void onDestroy() {
         super.onDestroy();
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        if(mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-        }
     }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        Intent restartService = new Intent(getApplicationContext(),
+                this.getClass());
+        restartService.setPackage(getPackageName());
+
+        PendingIntent restartServicePI = PendingIntent.getService(
+                getApplicationContext(), 1, restartService,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        //Restart the service once it has been killed android
+
+        AlarmManager alarmService = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() +100, restartServicePI);
+    }
+
+
 }
