@@ -1,4 +1,4 @@
-package com.travelalarm;
+package com.travelalarm.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -22,6 +22,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
@@ -33,6 +34,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
+import com.travelalarm.Other.BackgroundService;
+import com.travelalarm.Other.GPSTracker;
+import com.travelalarm.Other.MapsHandle;
+import com.travelalarm.R;
 
 import java.util.ArrayList;
 import java.util.List;

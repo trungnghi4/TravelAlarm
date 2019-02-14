@@ -1,8 +1,10 @@
-package com.travelalarm;
+package com.travelalarm.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+
+import com.travelalarm.R;
 
 public class SplashScreen extends AppCompatActivity {
     protected boolean _active = true;

@@ -11,10 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.FirebaseHandle;
-import com.travelalarm.Data.Route;
-import com.travelalarm.Other.Account;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -36,15 +33,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.travelalarm.R;
-import com.travelalarm.SplashScreen;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static com.travelalarm.Other.Constants.FB_ACCOUNT;
 import static com.travelalarm.Other.Constants.FB_FRIENDS;

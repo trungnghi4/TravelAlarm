@@ -1,4 +1,4 @@
-package com.travelalarm;
+package com.travelalarm.Activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.travelalarm.Activity.MainActivity;
+import com.travelalarm.R;
 
 public class AlarmActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;

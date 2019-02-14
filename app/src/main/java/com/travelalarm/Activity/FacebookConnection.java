@@ -1,4 +1,4 @@
-package com.travelalarm;
+package com.travelalarm.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.travelalarm.Activity.MainActivity;
+import com.travelalarm.R;
 
 public class FacebookConnection extends AppCompatActivity {
 

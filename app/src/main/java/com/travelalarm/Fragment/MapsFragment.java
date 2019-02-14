@@ -1,6 +1,5 @@
 package com.travelalarm.Fragment;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -36,17 +35,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.travelalarm.BackgroundService;
+import com.travelalarm.Other.BackgroundService;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
-import com.travelalarm.GPSTracker;
-import com.travelalarm.MapsHandle;
+import com.travelalarm.Other.GPSTracker;
+import com.travelalarm.Other.MapsHandle;
 import com.travelalarm.R;
-import com.travelalarm.SettingsActivity;
+import com.travelalarm.Activity.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;

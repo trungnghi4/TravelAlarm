@@ -1,4 +1,4 @@
-package com.travelalarm;
+package com.travelalarm.Other;
 
 import android.app.AlertDialog;
 import android.app.Service;
@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 public class GPSTracker extends Service implements LocationListener {
     @Nullable

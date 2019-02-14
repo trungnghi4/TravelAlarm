@@ -1,4 +1,4 @@
-package com.travelalarm;
+package com.travelalarm.Other;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -62,7 +62,6 @@ public class MapsHandle {
 
     public void setting() {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
     public void setMyLocationEnable(boolean isEnable) {
