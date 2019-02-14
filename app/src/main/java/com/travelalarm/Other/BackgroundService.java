@@ -20,14 +20,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.travelalarm.Activity.AlarmActivity;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
 import com.travelalarm.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.List;
 
@@ -61,7 +61,7 @@ public class BackgroundService extends Service implements LocationListener,
 
         listRoute = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE + " WHERE isEnable = 1");
 
-        if(listRoute != null) {
+        if(listRoute != null && listRoute.size() > 0) {
             Notification.Builder noti = new Notification.Builder(this)
                     .setContentTitle("Alarm Travel")
                     .setContentText(listRoute.get(0).getInfo())
@@ -87,14 +87,14 @@ public class BackgroundService extends Service implements LocationListener,
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-//        mLocationRequest = new LocationRequest();
-//        mLocationRequest.setInterval(1000);
-//        mLocationRequest.setFastestInterval(1000);
-//        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-//        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED) {
-//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-//        }
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
     }
 
     @Override
@@ -129,6 +129,8 @@ public class BackgroundService extends Service implements LocationListener,
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("info", listRoute.get(i).getName());
                         intent.putExtra("ringtone", listRoute.get(i).getRingtone());
+                        intent.putExtra("ringtonePath", listRoute.get(i).getRingtonePath());
+                        //Toast.makeText(BackgroundService.this, "Path: " + listRoute.get(i).getRingtonePath(), Toast.LENGTH_LONG).show();
                         startActivity(intent);
                         IS_ALARMING = true;
                         break;

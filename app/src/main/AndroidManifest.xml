@@ -11,6 +11,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -56,13 +59,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.FacebookConnection">
-            <intent-filter>
-                <action android:name="com.travelalarm.FACEBOOKCONNECTION" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".Activity.SignIn" />
 
         <service android:name=".Other.BackgroundService" />
 
@@ -80,16 +77,19 @@
             android:screenOrientation="sensorPortrait"
             android:showOnLockScreen="true"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".Activity.MainActivity">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity android:name=".Activity.SetAlarmActivity" />
-        <activity android:name=".Activity.EditAlarmActivity"></activity>
+        <activity android:name=".Activity.EditAlarmActivity" />
+        <activity android:name=".Activity.LoadRingtoneActivity" />
+        <activity android:name=".Activity.EditRingtoneActivity"></activity>
     </application>
 
 </manifest>

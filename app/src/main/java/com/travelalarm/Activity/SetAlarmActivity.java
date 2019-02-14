@@ -1,19 +1,21 @@
 package com.travelalarm.Activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-
+import com.travelalarm.R;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
 import com.travelalarm.Other.BackgroundService;
-import com.travelalarm.R;
 
 import java.text.DecimalFormat;
 
@@ -27,11 +29,12 @@ public class SetAlarmActivity extends AppCompatActivity {
     private TextView txtCurDistance;
     private Button btnSetAlarm;
     private SeekBar disSeekBar;
+    private LinearLayout layoutRingtone;
 
-    private String mDesName;
     private String mDesInfo;
     private int mDisToRing;
     private String mRingtone;
+    private String mRingtonePath;
     private Double mLatitude;
     private Double mLongitude;
     private Double mDistance;
@@ -53,20 +56,23 @@ public class SetAlarmActivity extends AppCompatActivity {
         txtCurDistance = (TextView) findViewById(R.id.cur_distance);
         btnSetAlarm = (Button) findViewById(R.id.set_alarm_btn);
         disSeekBar = (SeekBar) findViewById(R.id.seekBar);
+        layoutRingtone = (LinearLayout) findViewById(R.id.layoutRingtone) ;
 
-        Intent intent = getIntent();
-        mDesName = "";
+
+        final Intent intent = getIntent();
         mDesInfo = intent.getStringExtra("des_info");
         mLatitude = intent.getDoubleExtra("latitude", defaultValue);
         mLongitude = intent.getDoubleExtra("longitude", defaultValue);
         mDistance = intent.getDoubleExtra("cur_dis", defaultValue);
         mDisToRing = 100;
         mRingtone = "ringtone";
+        mRingtonePath = "";
 
         txtDesInfo.setText(mDesInfo);
         editDesName.setText(mDesInfo);
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
-        txtCurDistance.setText("" + ((mDistance < 1000)? "" + mDistance + "m": "" + decimalFormat.format(mDistance/1000.0) + "km"));
+        mDistance = mDistance < 1000 ? mDistance : mDistance/1000.0;
+        txtCurDistance.setText(decimalFormat.format(mDistance) + (mDistance < 1000 ? "m" : "km"));
 
         disSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -93,16 +99,43 @@ public class SetAlarmActivity extends AppCompatActivity {
                 if(!editDesName.getText().equals("")) {
                     //Set alarm
                     addRouteToDatabase(editDesName.getText().toString(), mDesInfo, mLatitude,
-                            mLongitude, mDistance, mDisToRing, mRingtone );
+                            mLongitude, mDistance, mDisToRing, mRingtone, mRingtonePath );
                     intentService = new Intent(SetAlarmActivity.this, BackgroundService.class);
                     startService(intentService);
+                    Toast.makeText(SetAlarmActivity.this, "Thiết lập báo thức thành công", Toast.LENGTH_SHORT).show();
+                    onBackPressed();
+                } else {
+                    Toast.makeText(SetAlarmActivity.this, "Tên của báo thức không được để trống", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        //xu li su kien thay nhap vao thay doi nhac bao thuc
+        layoutRingtone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SetAlarmActivity.this, EditRingtoneActivity.class);
+                intent.putExtra("ringtoneName", "ringtone");
+                intent.putExtra("ringtonePath", "");
+                startActivityForResult(intent,10);
             }
         });
     }
 
+    //nhan ket qua sau khi chon nhac chuong
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 10)
+        {
+            setRingtone(data.getStringExtra("ringtoneName"),data.getStringExtra("ringtonePath"));
+        }
+
+
+    }
+
     private void addRouteToDatabase(String name, String info, double latitude, double longitude,
-                                    double distance, int minDistance, String ringtone) {
+                                    double distance, int minDistance, String ringtone, String ringtonePath) {
         Route route = new Route();
         route.setInfo(info)
                 .setName(name)
@@ -111,7 +144,15 @@ public class SetAlarmActivity extends AppCompatActivity {
                 .setIsEnable(1)
                 .setDistance(distance)
                 .setMinDistance(minDistance)
-                .setRingtone(ringtone);
+                .setRingtone(ringtone)
+                .setRingtonePath(ringtonePath);
         dbHelper.insertRoute(route);
+    }
+
+    public void setRingtone(String ringtoneName, String ringtonePath)
+    {
+        mRingtone = ringtoneName;
+        mRingtonePath = ringtonePath;
+        txtRingtone.setText(mRingtone);
     }
 }
