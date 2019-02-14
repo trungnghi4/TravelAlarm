@@ -13,6 +13,8 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 
+import android.util.Log;
+
 public class GPSTracker extends Service implements LocationListener {
     @Nullable
 
@@ -146,6 +148,7 @@ public class GPSTracker extends Service implements LocationListener {
         this.location = location;
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+        Log.e("GPSTracker", "Updating...");
     }
 
     @Override

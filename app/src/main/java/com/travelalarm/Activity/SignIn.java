@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.travelalarm.Other.Account;
 import com.travelalarm.R;
 
 import org.json.JSONArray;
@@ -44,13 +45,11 @@ import static com.travelalarm.Other.Constants.FB_ACCOUNT;
 import static com.travelalarm.Other.Constants.FB_FRIENDS;
 import static com.travelalarm.Other.Constants.ID;
 
+
 public class SignIn extends AppCompatActivity implements
         View.OnClickListener {
 
-    public String userID;
-
     private static final String TAG = "FacebookLogin";
-    public static boolean isLoginFirst = false;
 
     private CallbackManager mCallbackManager;
 
@@ -61,13 +60,14 @@ public class SignIn extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
-        //if(mAuth.getCurrentUser() != null)
+        if(mAuth.getCurrentUser() != null)
+            Debug("mAuth: ", mAuth.toString());
         InitFacebookLogin();
 
-        //Log.d(TAG, mAuth.getCurrentUser().getEmail());
     }
+
 
     @Override
     public void onClick(View view) {
@@ -79,10 +79,7 @@ public class SignIn extends AppCompatActivity implements
         super.onActivityResult(requestCode, resultCode, data);
 
         // Pass the activity result back to the Facebook SDK
-        mCallbackManager = CallbackManager.Factory.create();
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
-
-
     }
 
     private void InitFacebookLogin()
@@ -91,23 +88,14 @@ public class SignIn extends AppCompatActivity implements
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(
                 "public_profile", "email", "user_friends"));
-        Log.d(TAG, "init");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
 
             // Đăng nhập vào facebook lần đầu tiên
             @Override
             public void onSuccess(LoginResult loginResult) {
-
-                LoginButton loginButton1 = (LoginButton) findViewById(R.id.login_button);
-                loginButton1.setVisibility(View.INVISIBLE);
-
-
-
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
                 handleFacebookAccessToken(loginResult.getAccessToken());
                 LoginFacebookHandle();
-
-                isLoginFirst = true;
             }
 
             @Override
@@ -122,13 +110,9 @@ public class SignIn extends AppCompatActivity implements
                 // ...
             }
         });
-
-
-        if (isLoggedIn()) {
-            LoginButton loginButton1 = (LoginButton) findViewById(R.id.login_button);
-            loginButton1.setVisibility(View.INVISIBLE);
+        if (isLoggedIn())
             LoginFacebookHandle();
-        }
+
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
@@ -141,14 +125,18 @@ public class SignIn extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             LoginFacebookHandle();
+                            Debug("Permissions ", getAccessToken().getPermissions().toString());
 
+                            //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(SignIn.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            //updateUI(null);
                         }
                     }
                 });
@@ -156,21 +144,16 @@ public class SignIn extends AppCompatActivity implements
 
     private void LoginFacebookHandle()
     {
-        if (AccessToken.getCurrentAccessToken() == null) {
-            disconnectFromFacebook();
-            FacebookSdk.sdkInitialize(getApplicationContext());
-            Toast.makeText(getBaseContext(),"Đang tiến hành đăng nhập lại",Toast.LENGTH_LONG).show();
-            Intent mainIntent = new Intent(SignIn.this, SplashScreen.class);
-            mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(mainIntent);
-        }
-        Toast.makeText(getBaseContext(), getResources().getText(R.string.login_success),Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(),"Đăng nhập Facebook thành công",Toast.LENGTH_LONG).show();
         UpdateDatabse();
+        Intent mainIntent = new Intent(SignIn.this, MainActivity.class);
+        SignIn.this.startActivity(mainIntent);
     }
 
     private void UpdateDatabse()
     {
         UpdateAccountDatabase();
+        UpdateFriendsDatabase();
     }
 
     private AccessToken getAccessToken()
@@ -186,7 +169,6 @@ public class SignIn extends AppCompatActivity implements
     private boolean isLoggedIn() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
-
     }
 
     private void UpdateAccountDatabase()
@@ -203,36 +185,24 @@ public class SignIn extends AppCompatActivity implements
                         try {
                             name = jsonObject.getString("name");
                             id =jsonObject.getString("id");
-                            userID = id;
-
+                            Debug("mAuth", String.valueOf(mAuth == null));
                             if(mAuth.getCurrentUser() != null)
                                 avatarURL = mAuth.getCurrentUser().getPhotoUrl().toString();
-
-                            //update friend database
-                            UpdateFriendsDatabase();
-                        } catch (Exception e) {
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
+                        Account account = new Account(id, name, avatarURL);
 
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
                         try {
-                            if(id != "")
-                            {
-                                ref.child(FB_ACCOUNT).child(id).child("name").setValue(name);
+                            ref.child(FB_ACCOUNT).child(mAuth.getCurrentUser().getUid()).child("id").setValue(id);
 
-                                ref.child(FB_ACCOUNT).child(id).child("avatarURL").setValue("");
-                                ref.child(FB_ACCOUNT).child(id).child("avatarURL").setValue(avatarURL);
+                            ref.child(FB_ACCOUNT).child(mAuth.getCurrentUser().getUid()).child("name").setValue(name);
 
-                                savePreference(name, avatarURL, id);
-
-                                FirebaseHandle.getInstance().setUserID(id);
-                            }
-                            Log.d("Chuyenscene" , "scene");
-                            //Khoi chay mainActivity
-                            Intent mainIntent = new Intent(SignIn.this, MainActivity.class);
-                            startActivity(mainIntent);
-
+                            ref.child(FB_ACCOUNT).child(mAuth.getCurrentUser().getUid()).child("avatarURL").setValue(avatarURL);
+                            Debug("Up account to db", "Successful");
                         }catch (Exception e)
                         {
                             e.printStackTrace();
@@ -243,21 +213,9 @@ public class SignIn extends AppCompatActivity implements
         ).executeAsync();
     }
 
-    private void savePreference(String name, String avatarURL, String userID) {
-        SharedPreferences sharedPreferences = this.getSharedPreferences("user_info", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        if(!name.equals(""))
-            editor.putString("name", name);
-        editor.putString("avatarURL", avatarURL);
-        editor.putString("userID", userID);
-
-        editor.apply();
-    }
-
     private void UpdateFriendsDatabase()
     {
-        new GraphRequest(
+        /*new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/" + getAccessToken().getUserId() + "/friends",
                 null,
@@ -265,6 +223,7 @@ public class SignIn extends AppCompatActivity implements
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
                         JSONObject jsonObject = response.getJSONObject();
+                        List<String> list = new ArrayList<String>();
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                         JSONArray array = new JSONArray();
                         try {
@@ -275,35 +234,19 @@ public class SignIn extends AppCompatActivity implements
                         for(int i = 0 ; i < array.length() ; i++){
                             try {
                                 JSONObject obj = array.getJSONObject(i);
+                                String name = obj.getString("name");
                                 String id = obj.getString("id");
-                                if(mAuth.getCurrentUser() != null) {
-                                    ref.child(FB_ACCOUNT).child(userID).child(FB_FRIENDS).child(id)
-                                            .child(ID).setValue(id);
-                                }
+                                String avatarURL = "https" + "://graph.facebook.com/" + id + "/picture";
+                                Account account = new Account(id, name, avatarURL);
+                                if(mAuth.getCurrentUser() != null)
+                                ref.child(FB_FRIENDS).child(mAuth.getCurrentUser().getUid()).child(String.valueOf(i)).setValue(account);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         }
+                        Debug("Up friends to db", "Successful");
                     }
                 }
-        ).executeAsync();
+        ).executeAsync();*/
     }
-
-    public static void disconnectFromFacebook() {
-
-        if (AccessToken.getCurrentAccessToken() == null) {
-            return; // already logged out
-        }
-
-        new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, new GraphRequest
-                .Callback() {
-            @Override
-            public void onCompleted(GraphResponse graphResponse) {
-                AccessToken.setCurrentAccessToken(null);
-                LoginManager.getInstance().logOut();
-            }
-        }).executeAsync();
-    }
-
-
 }

@@ -11,13 +11,10 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
 import com.travelalarm.R;
-
 import java.util.List;
-
 
 
 public class RouteListAdapter extends BaseAdapter {
@@ -88,12 +85,16 @@ public class RouteListAdapter extends BaseAdapter {
                     //set alarm
                     route.setIsEnable(1);
                     dbHelper.updateRoute(route);
+                    FirebaseHandle firebaseHandle = new FirebaseHandle();
+                    firebaseHandle.updateRoute(route);
                     holder.imgAlarm.setImageResource(R.drawable.ic_location_on);
                     context.startService(new Intent(context, BackgroundService.class));
                 } else {
                     //disable alarm
                     route.setIsEnable(0);
                     dbHelper.updateRoute(route);
+                    FirebaseHandle firebaseHandle = new FirebaseHandle();
+                    firebaseHandle.updateRoute(route);
                     holder.imgAlarm.setImageResource(R.drawable.ic_location_off);
                 }
             }

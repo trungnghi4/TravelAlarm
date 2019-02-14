@@ -1,49 +1,49 @@
 package com.travelalarm.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.travelalarm.R;
+import com.travelalarm.Activity.SignIn;
+
 
 public class SplashScreen extends AppCompatActivity {
     protected boolean _active = true;
     protected int _splashTime = 3000;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
 
-        Thread splashThread = new Thread(){
+        Thread splashTread = new Thread() {
             @Override
             public void run() {
-                try{
+                try {
                     int waited = 0;
-                    while (_active && (waited <_splashTime)){
+                    while (_active && (waited < _splashTime)) {
                         sleep(100);
-                        if(_active) {
+                        if (_active) {
                             waited += 100;
                         }
                     }
-                }
-                catch (InterruptedException e){}
-                finally {
+                } catch (InterruptedException e) {
+                    // do nothing
+                } finally {
                     finish();
 
-                    Intent mainIntent = new Intent(SplashScreen.this,FacebookConnection.class);
+                    Intent mainIntent = new Intent(SplashScreen.this, SignIn.class);
                     SplashScreen.this.startActivity(mainIntent);
                 }
-
             }
         };
-        splashThread.start();
-
+        splashTread.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         finish();
+
     }
 }

@@ -1,6 +1,5 @@
 package com.travelalarm.Other;
 
-
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -30,7 +29,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.List;
-
 
 public class BackgroundService extends Service implements LocationListener,
         GoogleApiClient.ConnectionCallbacks,
@@ -124,6 +122,8 @@ public class BackgroundService extends Service implements LocationListener,
 
                         listRoute.get(i).setIsEnable(0);
                         dbHelper.updateRoute(listRoute.get(i));
+                        FirebaseHandle firebaseHandle = new FirebaseHandle();
+                        firebaseHandle.updateRoute(listRoute.get(i));
 
                         Intent intent = new Intent(this, AlarmActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -12,10 +12,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-
 import com.travelalarm.Activity.EditAlarmActivity;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
+import com.travelalarm.Other.FirebaseHandle;
 import com.travelalarm.Other.RouteListAdapter;
 import com.travelalarm.R;
 
@@ -78,7 +78,8 @@ public class AlarmListFragment extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //delete route
                         dbHelper.deleteRoute("id = " + route.getId());
-
+                        FirebaseHandle firebaseHandle = new FirebaseHandle();
+                        firebaseHandle.removeRoute(String.valueOf(route.getId()));
                         //remove item
                         listView.setAdapter(null);
                         listView.setAdapter(new RouteListAdapter(getListRoute(), getContext()));
