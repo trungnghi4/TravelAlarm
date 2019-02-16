@@ -4,13 +4,17 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Path;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,11 +25,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.doan.thongbaodiemdung.Activity.LocationFriendActivity;
+import com.doan.thongbaodiemdung.Activity.SetAlarmActivity;
+import com.doan.thongbaodiemdung.Data.FirebaseHandle;
+import com.doan.thongbaodiemdung.Data.FriendInfo;
+import com.doan.thongbaodiemdung.Service.GPSTracker;
+import com.doan.thongbaodiemdung.Other.MapsHandle;
+import com.doan.thongbaodiemdung.R;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
@@ -35,14 +44,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.travelalarm.Service.BackgroundService;
-import com.travelalarm.Data.DatabaseHelper;
-import com.travelalarm.Data.Route;
-import com.travelalarm.Other.GPSTracker;
-import com.travelalarm.Other.MapsHandle;
-import com.travelalarm.R;
-import com.travelalarm.Activity.SettingsActivity;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,31 +54,26 @@ import java.util.List;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
+/**
+ * A simple {@link Fragment} subclass.
+ */
 public class MapsFragment extends Fragment {
 
     MapView mMapView;
     private GoogleMap mMap;
-    private ProgressDialog mProgress;
     private Context context;
 
     private MapsHandle mapsHandle;
     private GPSTracker gps;
 
     private Location mCurrentDestination;
-    private static String mDestinationInfo = "";
+    private String mDestinationInfo = "";
     private double currentDistance;
 
-    public static TextView distanceTextView;
-    private TextView destinationTextView;
-    private Switch switchButton;
-
-    private Intent intentService;
+    private FloatingActionButton fabSetAlarm;
 
     public static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     public static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-
-    private DatabaseHelper dbHelper;
-
 
     public MapsFragment() {
         // Required empty public constructor
@@ -87,19 +86,6 @@ public class MapsFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
         context = rootView.getContext();
-
-        mProgress = new ProgressDialog(context);
-        mProgress.setTitle("Loading map ...");
-        mProgress.setMessage("Please wait...");
-        mProgress.setCancelable(true);
-        mProgress.show();
-
-        dbHelper = new DatabaseHelper(context);
-        final Route route = dbHelper.getRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE + " WHERE isEnable = 1");
-
-        //set default value in the app's preferences
-        PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
-
 
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
@@ -119,52 +105,21 @@ public class MapsFragment extends Fragment {
             }
         });
 
-        destinationTextView = (TextView) rootView.findViewById(R.id.destination);
-        distanceTextView = (TextView) rootView.findViewById(R.id.distance);
-        switchButton = (Switch) rootView.findViewById(R.id.switchAlarm);
+        fabSetAlarm = (FloatingActionButton) rootView.findViewById(R.id.fab_set_alarm);
 
-        intentService = new Intent(context, BackgroundService.class);
-
-        if(route != null) {
-            Location location = new Location(LocationManager.GPS_PROVIDER);
-            location.setLatitude(route.getLatitude());
-            location.setLongitude(route.getLongitude());
-            mCurrentDestination = location;
-
-            mDestinationInfo = route.getInfo();
-
-            destinationTextView.setText(route.getInfo());
-            distanceTextView.setText("Khoảng cách: " + route.getDistance() + "m");
-            if(route.getIsEnable() == 1) {
-                switchButton.setChecked(true);
-                context.startService(intentService);
-            }
-            Log.d("MainActivityAlarm", route.toString());
-        } else
-        {
-            switchButton.setEnabled(false);
-            destinationTextView.setText("Bạn chưa chọn địa điểm nào");
-        }
-
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        fabSetAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                Route routeEnable = dbHelper.getRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE + " WHERE isEnable = 1");
-                if(isChecked) {
-                    Toast.makeText(context, "Đã thiết lập báo thức", Toast.LENGTH_SHORT).show();
-                    if(routeEnable == null)
-                        addRouteToDatabase(mDestinationInfo, mCurrentDestination.getLatitude(), mCurrentDestination.getLongitude());
-
-                    context.startService(intentService);
-
+            public void onClick(View view) {
+                if(mCurrentDestination != null) {
+                    Intent intent = new Intent(context, SetAlarmActivity.class);
+                    intent.putExtra("latitude", mCurrentDestination.getLatitude());
+                    intent.putExtra("longitude", mCurrentDestination.getLongitude());
+                    intent.putExtra("des_info", mDestinationInfo);
+                    intent.putExtra("cur_dis", currentDistance);
+                    context.startActivity(intent);
                 } else {
-                    Toast.makeText(context, "Đã hủy thiết lập báo thức", Toast.LENGTH_SHORT).show();
-                    if(routeEnable != null) {
-                        routeEnable.setIsEnable(0);
-                        dbHelper.updateRoute(routeEnable);
-                    }
-                    context.stopService(intentService);
+                    Toast.makeText(getContext(), "Bạn chưa chọn địa điểm nào. Bấm vào bản đồ để chọn địa điểm.",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -176,13 +131,11 @@ public class MapsFragment extends Fragment {
     //thiet dat cac thong so va su kien click tren ban do de hien thong tin diem da click
     private void onMyMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mapsHandle = new MapsHandle(context, mMap);
+        mapsHandle = MapsHandle.getInstance(context, mMap);
 
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                mProgress.dismiss();
-
                 // Hiển thị vị trí người dùng.
                 askPermissionsAndShowMyLocation();
             }
@@ -194,6 +147,7 @@ public class MapsFragment extends Fragment {
             public void onMapClick(LatLng latLng) {
                 mDestinationInfo = mapsHandle.getPlaceInfo(latLng);
                 addDestinationMarker(latLng);
+                Log.e("MapsFragment", "on map click listener");
             }
         });
 
@@ -256,7 +210,7 @@ public class MapsFragment extends Fragment {
     //hien thi dia diem hien tai khi moi vua load xong ban do
     private void showMyLocation() {
 
-        gps = new GPSTracker(context);
+        gps = GPSTracker.getInstance(context);
 
         if(gps.isCanGetLocation()) {
             LatLng latLng = new LatLng(gps.getLatitude(), gps.getLongitude());
@@ -274,10 +228,6 @@ public class MapsFragment extends Fragment {
         //add marker for destination
         mapsHandle.addMarker(latLng, mDestinationInfo);
 
-        //set switch button to off and disable
-        switchButton.setChecked(false);
-        switchButton.setEnabled(false);
-
         //draw path between current location to search location
         Location searchLocation = new Location(LocationManager.GPS_PROVIDER);
         searchLocation.setLatitude(latLng.latitude);
@@ -290,27 +240,12 @@ public class MapsFragment extends Fragment {
             //mapsHandle.drawPath(list);
 
             currentDistance = gps.getCurrentLocation().distanceTo(searchLocation);
-            distanceTextView.setText("Khoảng cách: " + currentDistance + "m");
-            switchButton.setEnabled(true);
-
-            destinationTextView.setText(mDestinationInfo);
             mCurrentDestination = searchLocation;
         } else {
             Toast.makeText(context, "Chưa lấy được vị trí hiện tại", Toast.LENGTH_SHORT).show();
         }
 
 
-    }
-
-    private void addRouteToDatabase(String info, double latitude, double longitude) {
-        dbHelper.delete("isEnable = 0");
-        Route route = new Route();
-        route.setInfo(info)
-                .setLatitude(latitude)
-                .setLongitude(longitude)
-                .setIsEnable(1)
-                .setDistance(currentDistance);
-        dbHelper.insertRoute(route);
     }
 
     @Override
@@ -354,12 +289,10 @@ public class MapsFragment extends Fragment {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent intentSettings = new Intent(context, SettingsActivity.class);
-            startActivity(intentSettings);
-        } else {
+        if (id == R.id.action_search)
             onMapSearch();
-        }
+        if (id == R.id.action_show_friends)
+            showFriends();
         return super.onOptionsItemSelected(item);
     }
 
@@ -392,5 +325,56 @@ public class MapsFragment extends Fragment {
             } else if(resultCode == RESULT_CANCELED) {
             }
         }
+    }
+
+    public void showFriends() {
+        List<FriendInfo> friends = FirebaseHandle.getInstance().getListFriends();
+        final MarkerOptions markerOptions = new MarkerOptions();
+        for (final FriendInfo friend : friends) {
+            if(friend.isFollowing() && friend.getStatus().equals("online")) {
+                markerOptions.position(new LatLng(friend.getLatitude(), friend.getLongitude()));
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+                        mMap.addMarker(markerOptions);
+                    }
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        try {
+
+                            Bitmap bitmap = Glide.with(context)
+                                    .load(friend.getAvatarURL())
+                                    .asBitmap()
+                                    .into(-1, -1).get();
+
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(circleBitmap(bitmap)));
+
+                        } catch (Exception ex) {
+                            Log.e("LocationFriendActivity", ex.getMessage());
+                        }
+                        return null;
+                    }
+                }.execute();
+            }
+        }
+    }
+
+    public static Bitmap circleBitmap(Bitmap bitmap) {
+        final int width = bitmap.getWidth();
+        final int height = bitmap.getHeight();
+        final Bitmap circleBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        final Path path = new Path();
+        path.addCircle((float) width/2,
+                (float) height/2,
+                (float) Math.min(width, height/2),
+                Path.Direction.CCW);
+
+        final Canvas canvas = new Canvas(circleBitmap);
+        canvas.clipPath(path);
+        canvas.drawBitmap(bitmap, 0, 0, null);
+        return circleBitmap;
     }
 }

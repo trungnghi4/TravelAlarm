@@ -35,7 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
 import com.travelalarm.Service.BackgroundService;
-import com.travelalarm.Other.GPSTracker;
+import com.travelalarm.Service.GPSTracker;
 import com.travelalarm.Other.MapsHandle;
 import com.travelalarm.R;
 

@@ -1,42 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_maps"
             android:icon="@drawable/ic_map"
-            android:title="Bản đồ" />
+            android:title="Map" />
 
         <item
-            android:id="@+id/nav_time_alarm"
+            android:id="@+id/nav_alarm"
             android:icon="@drawable/ic_alarm"
-            android:title="Đồng hồ" />
-        <item
-            android:id="@+id/nav_alerts"
-            android:icon="@drawable/ic_drawer_alerts"
-            android:title="Thông báo" />
+            android:title="List Alarm"/>
 
-        <item
-            android:id="@+id/nav_alarm_list"
-            android:icon="@drawable/ic_alarm"
-            android:title="Báo thức khoảng cách" />
-        <item
-            android:id="@+id/nav_time_list"
-            android:title="Báo thức thời gian" />
         <item
             android:id="@+id/nav_friends"
             android:icon="@drawable/ic_friends"
-            android:title="Bạn bè"/>
-
-        <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/ic_share"
-            android:title="Chia sẻ"/>
-
-        <item
-            android:id="@+id/nav_Logout"
-            android:icon="@drawable/logout"
-            android:title="Đăng xuất" />
+            android:title="Friends"/>
     </group>
 
+    <item android:title="Other">
+        <menu>
+            <item
+                android:id="@+id/nav_info"
+                android:title="About us"/>
+            <item
+                android:id="@+id/nav_help"
+                android:title="Help"/>
+        </menu>
+    </item>
 </menu>
