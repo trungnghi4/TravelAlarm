@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.travelalarm.Other.BackgroundService;
+import com.travelalarm.Service.BackgroundService;
 import com.travelalarm.R;
 
 import java.io.IOException;

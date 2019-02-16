@@ -1,4 +1,4 @@
-package com.travelalarm.Other;
+package com.travelalarm.Service;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -22,6 +22,7 @@ import android.util.Log;
 import com.travelalarm.Activity.AlarmActivity;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
+import com.travelalarm.Other.FirebaseHandle;
 import com.travelalarm.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;

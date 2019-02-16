@@ -1,0 +1,76 @@
+package com.travelalarm.Other;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.travelalarm.Data.DatabaseHelper;
+import com.travelalarm.R;
+
+import java.util.List;
+
+
+public class FriendsListAdapter extends BaseAdapter {
+    private List<Account> accounts;
+    private LayoutInflater inflater;
+    private Context context;
+    private DatabaseHelper dbHelper;
+
+    public FriendsListAdapter(List<Account> accounts, Context context) {
+        this.accounts = accounts;
+        this.context = context;
+        this.inflater = LayoutInflater.from(context);
+        dbHelper = new DatabaseHelper(context);
+    }
+
+    @Override
+    public int getCount() {
+        return accounts.size();
+    }
+
+    @Override
+    public Object getItem(int i) {
+        return accounts.get(i);
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    static class ViewHolder {
+        public ImageView friend_avatar;
+        public TextView friend_name;
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        final FriendsListAdapter.ViewHolder holder;
+        if(view == null) {
+            view = inflater.inflate(R.layout.fragment_friends, null);
+            holder = new FriendsListAdapter.ViewHolder();
+            holder.friend_avatar = (ImageView) view.findViewById(R.id.img_avatar);
+            holder.friend_name = (TextView) view.findViewById(R.id.friend_name);
+            view.setTag(holder);
+        } else{
+            holder = (FriendsListAdapter.ViewHolder) view.getTag();
+        }
+
+        Glide.with(context).load(accounts.get(i).getAvatarURL())
+                .thumbnail(0.5f)
+                .into(holder.friend_avatar);
+
+        holder.friend_name.setText(accounts.get(i).getName());
+
+        return view;
+    }
+}

@@ -17,6 +17,10 @@ public class Account {
         this.name = name;
         this.avatarURL = avatarURL;
     }
+    public Account(String id)
+    {
+        this.id = id;
+    }
 
     public Account(String id, String name)
     {
@@ -35,4 +39,16 @@ public class Account {
     }
 
     public String getAvatarURL() {return avatarURL;}
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAvatarURL(String avatarURL) {
+        this.avatarURL = avatarURL;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

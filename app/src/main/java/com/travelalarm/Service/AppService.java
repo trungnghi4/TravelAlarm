@@ -1,4 +1,4 @@
-package com.travelalarm.Other;
+package com.travelalarm.Service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -7,24 +7,20 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.travelalarm.Data.DatabaseHelper;
+import com.travelalarm.Data.FirebaseHandle;
+import com.travelalarm.Data.Route;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.travelalarm.Data.DatabaseHelper;
-import com.travelalarm.Data.Route;
 
 import java.util.List;
-
-/**
- * Created by Hong Hanh on 4/25/2017.
- */
 
 public class AppService extends Service implements LocationListener,
         GoogleApiClient.ConnectionCallbacks,
@@ -34,7 +30,6 @@ public class AppService extends Service implements LocationListener,
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
     private DatabaseHelper dbHelper = new DatabaseHelper(this);
-    private FirebaseHandle firebaseHandle;
 
     @Nullable
     @Override
@@ -54,15 +49,14 @@ public class AppService extends Service implements LocationListener,
             startService(intent);
         }
 
-        firebaseHandle = new FirebaseHandle();
-
-//        firebaseHandle.updateStatus("On");
+        FirebaseHandle.getInstance().setStatusChange();
 
         List<Route> listRoute = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE);
 
         for(Route route : listRoute) {
-            firebaseHandle.updateRoute(route);
+            FirebaseHandle.getInstance().updateRoute(route);
         }
+
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -81,9 +75,7 @@ public class AppService extends Service implements LocationListener,
 
     @Override
     public void onLocationChanged(Location location) {
-        FirebaseHandle firebaseHandle = new FirebaseHandle();
-        firebaseHandle.updateCurPos(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
-        Log.e("AppService", "running...");
+        FirebaseHandle.getInstance().updateCurPos(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
     }
 
     @Override
@@ -124,13 +116,10 @@ public class AppService extends Service implements LocationListener,
     }
 
     @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-    }
-
-    @Override
     public void onDestroy() {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         super.onDestroy();
     }
+
+
 }

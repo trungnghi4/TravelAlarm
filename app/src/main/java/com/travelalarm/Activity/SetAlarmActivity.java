@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
-import com.travelalarm.Other.BackgroundService;
+import com.travelalarm.Service.BackgroundService;
 import com.travelalarm.Other.FirebaseHandle;
 import com.travelalarm.R;
 

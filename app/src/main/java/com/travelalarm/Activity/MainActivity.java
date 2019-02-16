@@ -1,7 +1,8 @@
 package com.travelalarm.Activity;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,7 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,19 +22,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.travelalarm.Data.Route;
+import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Fragment.AlarmListFragment;
+import com.travelalarm.Fragment.FriendsListFragment;
 import com.travelalarm.Fragment.MapsFragment;
-import com.travelalarm.Activity.MapsActivity;
-import com.travelalarm.Other.AppService;
-import com.travelalarm.Other.FirebaseHandle;
+import com.travelalarm.Other.Account;
+import com.travelalarm.Service.AppService;
 import com.travelalarm.R;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.maps.model.LatLng;
-import com.travelalarm.Other.AppService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -105,13 +100,17 @@ public class MainActivity extends AppCompatActivity {
      * Load navigation menu header information
      */
     private void loadNavHeader() {
-        txtName.setText("Trung Nghia");
+        SharedPreferences sharedPreferences = this.getSharedPreferences("user_info", Context.MODE_PRIVATE);
+        if(sharedPreferences != null) {
+            txtName.setText(sharedPreferences.getString("name", "User name"));
 
-        //load profile image
-        Glide.with(this).load(urlProfileImg)
-                .thumbnail(0.5f)
-                .into(imgProfile);
-
+            //load profile image
+            Glide.with(this).load(sharedPreferences.getString("avatarURL", "avatar"))
+                    .thumbnail(0.5f)
+                    .into(imgProfile);
+        } else {
+            txtName.setText("User name");
+        }
     }
 
     /***
@@ -163,6 +162,9 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 AlarmListFragment alarmListFragment = new AlarmListFragment();
                 return alarmListFragment;
+            case 2:
+                FriendsListFragment friendsListFragment = new FriendsListFragment();
+                return friendsListFragment;
             default:
                 return new MapsFragment();
         }
@@ -244,5 +246,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         //super.onBackPressed();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.e("MainActivity", "Stop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.e("MainActivity", "Pause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+        Log.e("MainActivity", "Destroy");
     }
 }
