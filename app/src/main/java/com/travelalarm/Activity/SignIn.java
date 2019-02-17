@@ -288,9 +288,8 @@ public class SignIn extends AppCompatActivity implements
                 .Callback() {
             @Override
             public void onCompleted(GraphResponse graphResponse) {
+                AccessToken.setCurrentAccessToken(null);
                 LoginManager.getInstance().logOut();
-
-
             }
         }).executeAsync();
     }
