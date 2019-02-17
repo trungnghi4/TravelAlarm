@@ -12,6 +12,8 @@ public class FriendInfo implements Serializable{
     private boolean isFollowing;
     private boolean isNotifying;
     private int minDis;
+    private String ringtonePath;
+    private String ringtoneName;
 
     public String getId() {
         return id;
@@ -83,5 +85,21 @@ public class FriendInfo implements Serializable{
 
     public void setMinDis(int minDis) {
         this.minDis = minDis;
+    }
+
+    public String getRingtonePath() {
+        return ringtonePath;
+    }
+
+    public void setRingtonePath(String ringtonePath) {
+        this.ringtonePath = ringtonePath;
+    }
+
+    public String getRingtoneName() {
+        return ringtoneName;
+    }
+
+    public void setRingtoneName(String ringtoneName) {
+        this.ringtoneName = ringtoneName;
     }
 }

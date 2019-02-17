@@ -3,6 +3,8 @@ package com.travelalarm.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,19 +18,24 @@ import android.widget.Toast;
 
 import com.travelalarm.Activity.LocationFriendActivity;
 import com.travelalarm.Data.DatabaseHelper;
+import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Data.FriendInfo;
 import com.travelalarm.Other.FriendsListAdapter;
 import com.travelalarm.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static com.travelalarm.Other.Constants.ONLINE;
 
 
 public class FriendsListFragment extends Fragment {
 
-    private DatabaseHelper dbHelper;
     private ListView listView;
     private Context context;
+    private Timer timer;
 
 
     public FriendsListFragment() {
@@ -43,6 +50,8 @@ public class FriendsListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if(timer == null)
+            setUpdateListView();
     }
 
     @Override
@@ -51,7 +60,6 @@ public class FriendsListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_friends_list, container, false);
         context = view.getContext();
 
-        //dbHelper = new DatabaseHelper(getContext());
         listView = (ListView) view.findViewById(R.id.list_friends);
         listView.setAdapter(new FriendsListAdapter(getListAccount(), getContext()));
 
@@ -61,7 +69,7 @@ public class FriendsListFragment extends Fragment {
                 Object obj = adapterView.getItemAtPosition(i);
                 FriendInfo friendInfo = (FriendInfo) obj;
 
-                if(friendInfo.getStatus().equals("online")) {
+                if(friendInfo.getStatus().equals(ONLINE)) {
                     Intent intent = new Intent(context, LocationFriendActivity.class);
                     intent.putExtra("account", friendInfo);
                     context.startActivity(intent);
@@ -77,11 +85,11 @@ public class FriendsListFragment extends Fragment {
 
                 if(friendInfo.isNotifying()) {
                     FirebaseHandle.getInstance().setNotifyFriend(friendInfo.getId(), false);
-                    Toast.makeText(context, "Đã hủy thiết lập thông báo đối với " + friendInfo.getName(),
+                    Toast.makeText(context, getResources().getText(R.string.delete_notify) + friendInfo.getName(),
                             Toast.LENGTH_SHORT).show();
                 } else {
                     FirebaseHandle.getInstance().setNotifyFriend(friendInfo.getId(), true);
-                    Toast.makeText(context, "Đã thiết lập thông báo đối với " + friendInfo.getName(),
+                    Toast.makeText(context, getResources().getText(R.string.set_notify) + friendInfo.getName(),
                             Toast.LENGTH_SHORT).show();
                 }
 
@@ -89,8 +97,30 @@ public class FriendsListFragment extends Fragment {
             }
         });
 
+        setUpdateListView();
 
         return view;
+    }
+
+    private void setUpdateListView() {
+        timer = new Timer();
+
+        final Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                listView.setAdapter(null);
+                listView.setAdapter(new FriendsListAdapter(getListAccount(), context));
+            }
+        };
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0);
+            }
+        };
+
+        timer.schedule(timerTask, 3000, 1500);
     }
 
     private List<FriendInfo> getListAccount() {
@@ -114,8 +144,15 @@ public class FriendsListFragment extends Fragment {
         if (id == R.id.refresh_action) {
             listView.setAdapter(null);
             listView.setAdapter(new FriendsListAdapter(getListAccount(), context));
-            Toast.makeText(context, "Refresh danh sách bạn bè", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, getResources().getText(R.string.refresh_list_friends), Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStop() {
+        timer.cancel();
+        timer = null;
+        super.onStop();
     }
 }

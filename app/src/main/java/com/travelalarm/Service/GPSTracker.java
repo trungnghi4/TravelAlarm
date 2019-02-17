@@ -14,6 +14,8 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.travelalarm.R;
+
 
 //handle current position
 public class GPSTracker extends Service implements LocationListener {
@@ -119,10 +121,10 @@ public class GPSTracker extends Service implements LocationListener {
     public void showSettingsAlert() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
-        alertDialog.setTitle("GPS is settings");
-        alertDialog.setMessage("GPS is not enable. Do you want to go to settings menu?");
+        alertDialog.setTitle(mContext.getResources().getText(R.string.setting_title));
+        alertDialog.setMessage(mContext.getResources().getText(R.string.setting_message));
 
-        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(mContext.getResources().getText(R.string.setting), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -131,7 +133,7 @@ public class GPSTracker extends Service implements LocationListener {
             }
         });
 
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(mContext.getResources().getText(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -157,7 +159,6 @@ public class GPSTracker extends Service implements LocationListener {
         this.location = location;
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        Log.e("GPSTracker", "Updating...");
     }
 
     @Override

@@ -28,13 +28,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.doan.thongbaodiemdung.Activity.LocationFriendActivity;
-import com.doan.thongbaodiemdung.Activity.SetAlarmActivity;
-import com.doan.thongbaodiemdung.Data.FirebaseHandle;
-import com.doan.thongbaodiemdung.Data.FriendInfo;
-import com.doan.thongbaodiemdung.Service.GPSTracker;
-import com.doan.thongbaodiemdung.Other.MapsHandle;
-import com.doan.thongbaodiemdung.R;
+import com.travelalarm.Activity.LocationFriendActivity;
+import com.travelalarm.Activity.SetAlarmActivity;
+import com.travelalarm.Data.FirebaseHandle;
+import com.travelalarm.Data.FriendInfo;
+import com.travelalarm.Service.GPSTracker;
+import com.travelalarm.Other.MapsHandle;
+import com.travelalarm.R;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
@@ -53,10 +53,8 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.travelalarm.Other.Constants.ONLINE;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class MapsFragment extends Fragment {
 
     MapView mMapView;
@@ -118,7 +116,7 @@ public class MapsFragment extends Fragment {
                     intent.putExtra("cur_dis", currentDistance);
                     context.startActivity(intent);
                 } else {
-                    Toast.makeText(getContext(), "Bạn chưa chọn địa điểm nào. Bấm vào bản đồ để chọn địa điểm.",
+                    Toast.makeText(getContext(), getResources().getText(R.string.warning_set_location),
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -147,7 +145,6 @@ public class MapsFragment extends Fragment {
             public void onMapClick(LatLng latLng) {
                 mDestinationInfo = mapsHandle.getPlaceInfo(latLng);
                 addDestinationMarker(latLng);
-                Log.e("MapsFragment", "on map click listener");
             }
         });
 
@@ -237,12 +234,12 @@ public class MapsFragment extends Fragment {
             List<Location> list = new ArrayList<>();
             list.add(gps.getCurrentLocation());
             list.add(searchLocation);
-            //mapsHandle.drawPath(list);
 
             currentDistance = gps.getCurrentLocation().distanceTo(searchLocation);
             mCurrentDestination = searchLocation;
         } else {
-            Toast.makeText(context, "Chưa lấy được vị trí hiện tại", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, getResources().getText(R.string.error_get_current_location),
+                    Toast.LENGTH_SHORT).show();
         }
 
 
@@ -330,33 +327,35 @@ public class MapsFragment extends Fragment {
     public void showFriends() {
         List<FriendInfo> friends = FirebaseHandle.getInstance().getListFriends();
         final MarkerOptions markerOptions = new MarkerOptions();
-        for (final FriendInfo friend : friends) {
-            if(friend.isFollowing() && friend.getStatus().equals("online")) {
-                markerOptions.position(new LatLng(friend.getLatitude(), friend.getLongitude()));
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        super.onPostExecute(aVoid);
-                        mMap.addMarker(markerOptions);
-                    }
-
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        try {
-
-                            Bitmap bitmap = Glide.with(context)
-                                    .load(friend.getAvatarURL())
-                                    .asBitmap()
-                                    .into(-1, -1).get();
-
-                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(circleBitmap(bitmap)));
-
-                        } catch (Exception ex) {
-                            Log.e("LocationFriendActivity", ex.getMessage());
+        if(friends != null) {
+            for (final FriendInfo friend : friends) {
+                if (friend.isFollowing() && friend.getStatus().equals(ONLINE)) {
+                    markerOptions.position(new LatLng(friend.getLatitude(), friend.getLongitude()));
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            super.onPostExecute(aVoid);
+                            mMap.addMarker(markerOptions);
                         }
-                        return null;
-                    }
-                }.execute();
+
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            try {
+
+                                Bitmap bitmap = Glide.with(context)
+                                        .load(friend.getAvatarURL())
+                                        .asBitmap()
+                                        .into(-1, -1).get();
+
+                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(circleBitmap(bitmap)));
+
+                            } catch (Exception ex) {
+                                Log.e("LocationFriendActivity", ex.getMessage());
+                            }
+                            return null;
+                        }
+                    }.execute();
+                }
             }
         }
     }

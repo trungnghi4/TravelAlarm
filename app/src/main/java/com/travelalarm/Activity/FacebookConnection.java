@@ -12,6 +12,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.travelalarm.R;
@@ -41,12 +42,14 @@ public class FacebookConnection extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Toast.makeText(FacebookConnection.this, "Đã đăng xuất", Toast.LENGTH_LONG).show();
+                Toast.makeText(FacebookConnection.this, getResources().getText(R.string.logout_success),
+                        Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(FacebookConnection.this, "Đăng nhập thất bại", Toast.LENGTH_LONG).show();
+                Toast.makeText(FacebookConnection.this, getResources().getText(R.string.login_fail),
+                        Toast.LENGTH_LONG).show();
             }
         });
 
@@ -73,6 +76,14 @@ public class FacebookConnection extends AppCompatActivity {
     public boolean isLoggedIn() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
+    }
+
+    public static void Logout()
+    {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if(accessToken != null){
+            LoginManager.getInstance().logOut();
+        }
     }
 
 }

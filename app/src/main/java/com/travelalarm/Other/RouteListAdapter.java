@@ -79,7 +79,7 @@ public class RouteListAdapter extends BaseAdapter {
             holder.btnSetAlarm.setChecked(true);
         }
         holder.alarmName.setText(route.getName());
-        holder.alarmDistance.setText("Khoảng cách hiện tại: " + route.getDistance().toString() + "m");
+        holder.alarmDistance.setText(context.getResources().getText(R.string.current_distance) + route.getDistance().toString() + "m");
 
         holder.btnSetAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -88,16 +88,16 @@ public class RouteListAdapter extends BaseAdapter {
                     //set alarm
                     route.setIsEnable(1);
                     dbHelper.updateRoute(route);
-                    FirebaseHandle firebaseHandle = new FirebaseHandle();
-                    firebaseHandle.updateRoute(route);
+
+                    FirebaseHandle.getInstance().updateRoute(route);
                     holder.imgAlarm.setImageResource(R.drawable.ic_location_on);
                     context.startService(new Intent(context, BackgroundService.class));
                 } else {
                     //disable alarm
                     route.setIsEnable(0);
                     dbHelper.updateRoute(route);
-                    FirebaseHandle firebaseHandle = new FirebaseHandle();
-                    firebaseHandle.updateRoute(route);
+
+                    FirebaseHandle.getInstance().updateRoute(route);
                     holder.imgAlarm.setImageResource(R.drawable.ic_location_off);
                 }
             }
