@@ -1,11 +1,8 @@
 package com.travelalarm.Fragment;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,20 +14,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.travelalarm.Activity.EditAlarmActivity;
 import com.travelalarm.Activity.LocationFriendActivity;
 import com.travelalarm.Data.DatabaseHelper;
-import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Data.FriendInfo;
-import com.travelalarm.Data.Route;
-import com.travelalarm.Other.Account;
 import com.travelalarm.Other.FriendsListAdapter;
-import com.travelalarm.Other.RouteListAdapter;
 import com.travelalarm.R;
-import com.travelalarm.Data.FirebaseHandle;
-import com.travelalarm.Other.FriendsListAdapter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

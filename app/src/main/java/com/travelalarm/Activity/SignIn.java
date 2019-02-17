@@ -8,11 +8,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.widget.Toast;
 
-import com.travelalarm.Data.FirebaseHandle;
+import com.travelalarm.Data.DatabaseHelper;
+import com.travelalarm.Data.Route;
 import com.travelalarm.Other.Account;
 import com.travelalarm.R;
 import com.facebook.AccessToken;
@@ -55,6 +55,8 @@ public class SignIn extends AppCompatActivity implements
     private CallbackManager mCallbackManager;
 
     private FirebaseAuth mAuth;
+
+    private DatabaseHelper dbHelper = new DatabaseHelper(this);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -143,7 +145,6 @@ public class SignIn extends AppCompatActivity implements
     {
         Toast.makeText(getBaseContext(),"Đăng nhập Facebook thành công",Toast.LENGTH_LONG).show();
         UpdateDatabse();
-
     }
 
     private void UpdateDatabse()
@@ -265,5 +266,14 @@ public class SignIn extends AppCompatActivity implements
                     }
                 }
         ).executeAsync();
+    }
+
+    public void UpListAlarmToFirebase()
+    {
+        List<Route> listRoute = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE);
+
+        for(Route route : listRoute) {
+            FirebaseHandle.getInstance().updateRoute(route);
+        }
     }
 }

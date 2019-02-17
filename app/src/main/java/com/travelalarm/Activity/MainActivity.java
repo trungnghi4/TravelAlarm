@@ -21,12 +21,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Fragment.AlarmListFragment;
 import com.travelalarm.Fragment.FriendsListFragment;
 import com.travelalarm.Fragment.MapsFragment;
-import com.travelalarm.Other.Account;
 import com.travelalarm.Service.AppService;
 import com.travelalarm.R;
 

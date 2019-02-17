@@ -10,10 +10,8 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 import com.travelalarm.Data.DatabaseHelper;
-import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Data.Route;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;

@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import android.widget.ListView;
 import com.travelalarm.Activity.EditAlarmActivity;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.Route;
-import com.travelalarm.Other.FirebaseHandle;
+import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Other.RouteListAdapter;
 import com.travelalarm.R;
 

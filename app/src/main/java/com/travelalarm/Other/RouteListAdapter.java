@@ -12,6 +12,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.travelalarm.Data.DatabaseHelper;
+import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Data.Route;
 import com.travelalarm.R;
 import com.travelalarm.Service.BackgroundService;

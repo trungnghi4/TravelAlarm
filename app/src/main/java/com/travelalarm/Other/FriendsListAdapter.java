@@ -1,7 +1,6 @@
 package com.travelalarm.Other;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,25 +11,17 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Data.FriendInfo;
-import com.travelalarm.Data.Route;
 import com.travelalarm.R;
-import com.travelalarm.Service.BackgroundService;
-import com.google.android.gms.games.Games;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
-/**
- * Created by HongHa on 4/27/2017.
- */
 
 public class FriendsListAdapter extends BaseAdapter {
     private List<FriendInfo> accounts;
@@ -64,6 +55,7 @@ public class FriendsListAdapter extends BaseAdapter {
         public ImageView friend_avatar;
         public TextView friend_name;
         public CheckBox friend_chkBox;
+        public TextView friend_distance;
     }
 
     @Override
@@ -77,6 +69,7 @@ public class FriendsListAdapter extends BaseAdapter {
             holder.friend_name = (TextView) view.findViewById(R.id.friend_name);
             holder.itemLayout = (LinearLayout) view.findViewById(R.id.friend_item);
             holder.friend_chkBox = (CheckBox) view.findViewById(R.id.friend_chkbox);
+            holder.friend_distance = (TextView) view.findViewById(R.id.friend_distance);
             view.setTag(holder);
         } else{
             holder = (FriendsListAdapter.ViewHolder) view.getTag();
@@ -88,8 +81,19 @@ public class FriendsListAdapter extends BaseAdapter {
 
         holder.friend_name.setText(accounts.get(i).getName());
 
-        if(accounts.get(i).getStatus().equals("online")) {
-            holder.itemLayout.setBackgroundColor(Color.WHITE);
+        Log.e(accounts.get(i).getStatus(), "ne");
+
+
+        if(accounts.get(i).getStatus() == "online") {
+            DecimalFormat decimalFormat = new DecimalFormat("0.00");
+            Double distance = FirebaseHandle.getInstance().getDistanceFromFriend(accounts.get(i).getId());
+            holder.friend_distance.setText((distance < 1000) ? ("Khoảng cách với bạn: " + decimalFormat.format(distance) + " m") : ("Khoảng cách với bạn: " + decimalFormat.format(distance / 1000.0) + " km"));
+        }
+        else
+            holder.friend_distance.setText("Người này hiện đang offline");
+
+        if(accounts.get(i).getStatus().equals("offline")) {
+            holder.itemLayout.setBackgroundColor(Color.GRAY);
         }
 
         if(accounts.get(i).isFollowing()) {
@@ -111,6 +115,8 @@ public class FriendsListAdapter extends BaseAdapter {
                 }
             }
         });
+
+
 
         return view;
     }
