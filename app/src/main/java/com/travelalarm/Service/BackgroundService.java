@@ -56,7 +56,7 @@ public class BackgroundService extends Service implements LocationListener,
     public void onCreate() {
         super.onCreate();
 
-        buildGoogleApiClient();
+        //buildGoogleApiClient();
 
         listRoute = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE + " WHERE isEnable = 1");
 
@@ -86,14 +86,14 @@ public class BackgroundService extends Service implements LocationListener,
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
+//        mLocationRequest = new LocationRequest();
+//        mLocationRequest.setInterval(1000);
+//        mLocationRequest.setFastestInterval(1000);
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+//                == PackageManager.PERMISSION_GRANTED) {
+//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+//        }
     }
 
     @Override
@@ -113,8 +113,10 @@ public class BackgroundService extends Service implements LocationListener,
                     Location desLocation = new Location(LocationManager.GPS_PROVIDER);
                     desLocation.setLatitude(listRoute.get(i).getLatitude());
                     desLocation.setLongitude(listRoute.get(i).getLongitude());
-                    Log.e("BackgroundService", listRoute.get(i).getName());
-                    Log.e("BackgroundService", listRoute.get(i).getDistance().toString());
+
+                    listRoute.get(i).setDistance((double)mLastLocation.distanceTo(desLocation));
+                    dbHelper.updateRoute(listRoute.get(i));
+                    FirebaseHandle.getInstance().updateRoute(listRoute.get(i));
 
                     if (mLastLocation.distanceTo(desLocation) < listRoute.get(i).getMinDistance()) {
                         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
@@ -123,8 +125,8 @@ public class BackgroundService extends Service implements LocationListener,
 
                         listRoute.get(i).setIsEnable(0);
                         dbHelper.updateRoute(listRoute.get(i));
-                        FirebaseHandle firebaseHandle = new FirebaseHandle();
-                        firebaseHandle.updateRoute(listRoute.get(i));
+
+                        FirebaseHandle.getInstance().updateRoute(listRoute.get(i));
 
                         Intent intent = new Intent(this, AlarmActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

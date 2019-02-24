@@ -2,7 +2,7 @@ package com.travelalarm.Data;
 
 import java.io.Serializable;
 
-public class Route implements Serializable {
+public class Route implements Serializable{
     private int id;
     private Double latitude;
     private Double longitude;

@@ -1,15 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    tools:context="com.travelalarm.Fragment.AlarmListFragment">
+    tools:context="com.travelalarm.Fragment.TimeAlarmListFragment">
+
+    <!-- TODO: Update blank fragment layout -->
 
     <ListView
-        android:id="@+id/list_view"
+        android:id="@+id/list_time_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </ListView>
+
+    <Button
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:text="QQQQ" />
+
 </RelativeLayout>

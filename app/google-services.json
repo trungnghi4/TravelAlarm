@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "235174706614",
+    "firebase_url": "https://travelalarm-debc4.firebaseio.com",
+    "project_id": "travelalarm-debc4",
+    "storage_bucket": "travelalarm-debc4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235174706614:android:6d6dd732fe7cfc60",
+        "android_client_info": {
+          "package_name": "com.travelalarm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "235174706614-soho66nds3bgrac1k7ouea3a61v4vef2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.travelalarm",
+            "certificate_hash": "5b1ff81a28bd85fabfdf8bf8c34daf51f5db30e7"
+          }
+        },
+        {
+          "client_id": "235174706614-c1cllu9i9cramgubpptv46h4o186tomr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2fcsYDChITSjG5auVd-Trx-qaNglB-pE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235174706614-c1cllu9i9cramgubpptv46h4o186tomr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

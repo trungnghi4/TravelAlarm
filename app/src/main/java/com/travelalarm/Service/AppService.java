@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 
 import com.travelalarm.Activity.AlarmActivity;
 import com.travelalarm.Activity.MainActivity;
+import com.travelalarm.Activity.SignIn;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Data.FriendInfo;
@@ -41,6 +42,7 @@ public class AppService extends Service implements LocationListener,
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
     private DatabaseHelper dbHelper = new DatabaseHelper(this);
+    private static Location currentLocation;
 
     @Nullable
     @Override
@@ -52,7 +54,7 @@ public class AppService extends Service implements LocationListener,
     public void onCreate() {
         super.onCreate();
 
-        buildGoogleApiClient();
+        //buildGoogleApiClient();
 
         List<Route> listRouteEnable = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE + " WHERE isEnable = 1");
         if(listRouteEnable.size() > 0) {
@@ -62,29 +64,65 @@ public class AppService extends Service implements LocationListener,
 
         FirebaseHandle.getInstance().setStatusChange();
 
-
-        List<Route> listRoute = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE);
-
-        for(Route route : listRoute) {
-            try {
-                FirebaseHandle.getInstance().updateRoute(route);
-            }catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-
         friendNear = new ArrayList<>();
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
+    private boolean isHasRoute(Route route, List<Route> listRoute) {
+        for (Route localRoute : listRoute) {
+            if(route.getId() == localRoute.getId())
+                return true;
+        }
+        return false;
     }
+
+    private void syncData() {
+        //neu la lan dang nhap dau tien
+        if(SignIn.isLoginFirst) {
+            List<Route> routeList = FirebaseHandle.getInstance().getListRoute();
+            DatabaseHelper dbHelper = new DatabaseHelper(AppService.this);
+            dbHelper.deleteAllData();
+
+            if (routeList != null) {
+                for (Route route : routeList) {
+                    dbHelper.insertRouteWithId(route);
+                }
+            }
+        }
+
+        //neu khong phai dang nhap lan dau, dong bo hoa dư lieu tu may len firebase
+        if(!SignIn.isLoginFirst) {
+            //cap nhat nhưng bao thuc tu may len firebase
+            List<Route> listRoute = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE);
+
+            for(Route route : listRoute) {
+                try {
+                    FirebaseHandle.getInstance().updateRoute(route);
+                }catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+
+            //xoa nhung bao thuc ma trong may da xoa
+            List<Route> firebaseRoute = FirebaseHandle.getInstance().getListRoute();
+            if(firebaseRoute != null) {
+                for (Route route : firebaseRoute) {
+                    if (!isHasRoute(route, listRoute))
+                        FirebaseHandle.getInstance().removeRoute(String.valueOf(route.getId()));
+                }
+            }
+        }
+
+    }
+
+//    protected synchronized void buildGoogleApiClient() {
+////        mGoogleApiClient = new GoogleApiClient.Builder(this)
+////                .addConnectionCallbacks(this)
+////                .addOnConnectionFailedListener(this)
+////                .addApi(LocationServices.API)
+////                .build();
+////        mGoogleApiClient.connect();
+////    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -94,8 +132,13 @@ public class AppService extends Service implements LocationListener,
     @Override
     public void onLocationChanged(Location location) {
 
+        currentLocation = location;
+
         FirebaseHandle.getInstance().updateCurPos(location.getLatitude(), location.getLongitude());
         FirebaseHandle.getInstance().setStatusChange();
+
+        //dong bo hoa du lieu
+        syncData();
 
         List<FriendInfo> friends = FirebaseHandle.getInstance().getListFriends();
         if(friends != null) {
@@ -138,10 +181,15 @@ public class AppService extends Service implements LocationListener,
             }
         }
 
-        if(countNoti >= 0) {
-            // MainActivity.notiCounter.setText(String.valueOf(countNoti));
-            MainActivity.UpdateNotiCounter((countNoti > 5) ? "5+" : String.valueOf(countNoti));
+        try {
+            if (countNoti >= 0) {
+                // MainActivity.notiCounter.setText(String.valueOf(countNoti));
+                MainActivity.UpdateNotiCounter((countNoti > 5) ? "5+" : String.valueOf(countNoti));
 
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -175,14 +223,14 @@ public class AppService extends Service implements LocationListener,
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
+//        mLocationRequest = LocationRequest.create();
+//        mLocationRequest.setInterval(1000);
+//        mLocationRequest.setFastestInterval(1000);
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+//                == PackageManager.PERMISSION_GRANTED) {
+//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+//        }
     }
 
     @Override
@@ -201,5 +249,7 @@ public class AppService extends Service implements LocationListener,
         super.onDestroy();
     }
 
-
+    public static Location getCurrentPosition() {
+        return currentLocation;
+    }
 }

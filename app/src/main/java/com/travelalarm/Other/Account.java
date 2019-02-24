@@ -11,15 +11,16 @@ public class Account {
 
     }
 
+    public Account(String id)
+    {
+        this.id = id;
+    }
+
     public Account(String id, String name, String avatarURL)
     {
         this.id = id;
         this.name = name;
         this.avatarURL = avatarURL;
-    }
-    public Account(String id)
-    {
-        this.id = id;
     }
 
     public Account(String id, String name)

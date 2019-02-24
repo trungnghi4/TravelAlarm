@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Data.FriendInfo;
 import com.travelalarm.Fragment.AlertsListFragment;
@@ -83,6 +84,7 @@ public class AlertsListAdapter extends BaseAdapter {
         }
 
         Glide.with(context).load(accounts.get(i).getAvatarURL())
+                .apply(RequestOptions.circleCropTransform())
                 .thumbnail(0.5f)
                 .into(holder.alert_avatar);
 

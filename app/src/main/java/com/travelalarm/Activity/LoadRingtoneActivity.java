@@ -1,5 +1,4 @@
 package com.travelalarm.Activity;
-
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -59,7 +58,7 @@ public class LoadRingtoneActivity extends AppCompatActivity {
     public void doStuff()
     {
         listView = (ListView) findViewById(R.id.listView);
-        arrayList = new ArrayList<>();
+        arrayList = new ArrayList<String>();
         getMusic();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(adapter);

@@ -32,7 +32,6 @@ public class AlertsListFragment extends Fragment {
 
     private ListView listView;
     private Context context;
-    private ShareButton shareButton;
 
     public AlertsListFragment() {
     }
@@ -40,7 +39,7 @@ public class AlertsListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
     }
 
     @Override
@@ -53,7 +52,7 @@ public class AlertsListFragment extends Fragment {
         if(account == null) {
             account = new ArrayList<>();
         }
-        Log.e("hanh benh", String.valueOf(account.size()));
+
         return account;
     }
 
@@ -81,12 +80,6 @@ public class AlertsListFragment extends Fragment {
                 }
             }
         });
-
-        shareButton = (ShareButton) view.findViewById(R.id.share_app);
-        ShareLinkContent content = new ShareLinkContent.Builder()
-                .setContentUrl(Uri.parse("https://play.google.com/store/apps/details?id=com.doan.thongbaodiemdung"))
-                .build();
-        shareButton.setShareContent(content);
 
         return view;
     }

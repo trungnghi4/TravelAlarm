@@ -16,13 +16,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.travelalarm.Data.FriendInfo;
 import com.travelalarm.Other.MapsHandle;
 import com.travelalarm.R;
-import com.travelalarm.Service.GPSTracker;
+import com.travelalarm.Service.AppService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,7 +36,6 @@ import java.util.concurrent.ExecutionException;
 public class LocationFriendActivity extends AppCompatActivity {
 
     private GoogleMap mMap;
-    private GPSTracker gps;
     private Location curPos;
     private FriendInfo account;
 
@@ -85,8 +82,8 @@ public class LocationFriendActivity extends AppCompatActivity {
                         try {
 
                             Bitmap bitmap = Glide.with(LocationFriendActivity.this)
-                                    .load(account.getAvatarURL())
                                     .asBitmap()
+                                    .load(account.getAvatarURL())
                                     .into(-1, -1).get();
 
                             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(circleBitmap(bitmap)));
@@ -135,13 +132,10 @@ public class LocationFriendActivity extends AppCompatActivity {
     }
 
     private void showMyLocation() {
-
-        gps = GPSTracker.getInstance(this);
-
-        if(gps.isCanGetLocation()) {
+        if(AppService.getCurrentPosition() != null) {
             curPos = new Location(LocationManager.GPS_PROVIDER);
-            curPos.setLatitude(gps.getLatitude());
-            curPos.setLongitude(gps.getLongitude());
+            curPos.setLatitude(AppService.getCurrentPosition().getLatitude());
+            curPos.setLongitude(AppService.getCurrentPosition().getLongitude());
         }
     }
 

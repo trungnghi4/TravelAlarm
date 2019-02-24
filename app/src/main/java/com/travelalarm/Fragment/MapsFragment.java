@@ -1,7 +1,9 @@
 package com.travelalarm.Fragment;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,6 +14,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -32,7 +35,7 @@ import com.travelalarm.Activity.LocationFriendActivity;
 import com.travelalarm.Activity.SetAlarmActivity;
 import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Data.FriendInfo;
-import com.travelalarm.Service.GPSTracker;
+import com.travelalarm.Service.AppService;
 import com.travelalarm.Other.MapsHandle;
 import com.travelalarm.R;
 import com.google.android.gms.common.api.Status;
@@ -62,11 +65,11 @@ public class MapsFragment extends Fragment {
     private Context context;
 
     private MapsHandle mapsHandle;
-    private GPSTracker gps;
 
     private Location mCurrentDestination;
     private String mDestinationInfo = "";
     private double currentDistance;
+
 
     private FloatingActionButton fabSetAlarm;
 
@@ -95,6 +98,7 @@ public class MapsFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
 
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -206,19 +210,17 @@ public class MapsFragment extends Fragment {
 
     //hien thi dia diem hien tai khi moi vua load xong ban do
     private void showMyLocation() {
-
-        gps = GPSTracker.getInstance(context);
-
-        if(gps.isCanGetLocation()) {
-            LatLng latLng = new LatLng(gps.getLatitude(), gps.getLongitude());
+        if(AppService.getCurrentPosition() != null) {
+            LatLng latLng = new LatLng(AppService.getCurrentPosition().getLatitude(), AppService.getCurrentPosition().getLongitude());
 
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
         } else {
-            gps.showSettingsAlert();
-            gps.getLocation();
+            showSettingsAlert();
         }
     }
+
+
 
     //gan marker cho diem den va ve duong noi va tinh khoang cach giua diem hien tai va diem den
     private void addDestinationMarker(LatLng latLng) {
@@ -230,19 +232,17 @@ public class MapsFragment extends Fragment {
         searchLocation.setLatitude(latLng.latitude);
         searchLocation.setLongitude(latLng.longitude);
 
-        if(gps.getCurrentLocation() != null) {
+        if(AppService.getCurrentPosition() != null) {
             List<Location> list = new ArrayList<>();
-            list.add(gps.getCurrentLocation());
+            list.add(AppService.getCurrentPosition());
             list.add(searchLocation);
 
-            currentDistance = gps.getCurrentLocation().distanceTo(searchLocation);
+            currentDistance = AppService.getCurrentPosition().distanceTo(searchLocation);
             mCurrentDestination = searchLocation;
         } else {
             Toast.makeText(context, getResources().getText(R.string.error_get_current_location),
                     Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     @Override
@@ -327,9 +327,11 @@ public class MapsFragment extends Fragment {
     public void showFriends() {
         List<FriendInfo> friends = FirebaseHandle.getInstance().getListFriends();
         final MarkerOptions markerOptions = new MarkerOptions();
+        int friendShowed = 0;
         if(friends != null) {
             for (final FriendInfo friend : friends) {
                 if (friend.isFollowing() && friend.getStatus().equals(ONLINE)) {
+                    friendShowed++;
                     markerOptions.position(new LatLng(friend.getLatitude(), friend.getLongitude()));
                     new AsyncTask<Void, Void, Void>() {
                         @Override
@@ -343,8 +345,8 @@ public class MapsFragment extends Fragment {
                             try {
 
                                 Bitmap bitmap = Glide.with(context)
-                                        .load(friend.getAvatarURL())
                                         .asBitmap()
+                                        .load(friend.getAvatarURL())
                                         .into(-1, -1).get();
 
                                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(circleBitmap(bitmap)));
@@ -357,6 +359,11 @@ public class MapsFragment extends Fragment {
                     }.execute();
                 }
             }
+        }
+
+        if(friendShowed == 0) {
+            Toast.makeText(context, "Bạn bè mà bạn theo dõi hiện đã offline hoặc bạn không theo dõi bạn bè nào",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -375,5 +382,30 @@ public class MapsFragment extends Fragment {
         canvas.clipPath(path);
         canvas.drawBitmap(bitmap, 0, 0, null);
         return circleBitmap;
+    }
+
+
+    public void showSettingsAlert() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+
+        alertDialog.setTitle(context.getResources().getText(R.string.setting_title));
+        alertDialog.setMessage(context.getResources().getText(R.string.setting_message));
+
+        alertDialog.setPositiveButton(context.getResources().getText(R.string.setting), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                context.startActivity(intent);
+            }
+        });
+
+        alertDialog.setNegativeButton(context.getResources().getText(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        alertDialog.show();
     }
 }

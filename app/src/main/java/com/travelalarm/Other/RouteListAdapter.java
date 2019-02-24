@@ -17,6 +17,7 @@ import com.travelalarm.Data.Route;
 import com.travelalarm.R;
 import com.travelalarm.Service.BackgroundService;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 
@@ -79,7 +80,12 @@ public class RouteListAdapter extends BaseAdapter {
             holder.btnSetAlarm.setChecked(true);
         }
         holder.alarmName.setText(route.getName());
-        holder.alarmDistance.setText(context.getResources().getText(R.string.current_distance) + route.getDistance().toString() + "m");
+
+        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+        Double distance = route.getDistance();
+        holder.alarmDistance.setText((distance < 1000) ?
+                (context.getResources().getText(R.string.current_distance) + decimalFormat.format(distance) + "m"):
+                (context.getResources().getText(R.string.current_distance) + decimalFormat.format(distance / 1000.0) + "km"));
 
         holder.btnSetAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

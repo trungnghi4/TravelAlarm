@@ -14,14 +14,15 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="android.support.multidex.MultiDexApplication">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -40,14 +41,14 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBN0-rzCge_etnqsBiQrsQOxuVdps-bA6M" />
 
-        <activity android:name=".Activity.SplashScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <!--<activity android:name=".Activity.SplashScreen">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".Activity.SignIn" />
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+        <!--<activity android:name=".Activity.SignIn" />-->
 
         <service android:name=".Service.BackgroundService" />
         <service android:name=".Service.AppService"/>
@@ -58,13 +59,11 @@
             android:showOnLockScreen="true"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activity.MainActivity">
+        <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+        <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
         <activity
             android:name=".Activity.SetAlarmActivity"
@@ -89,6 +88,8 @@
         <activity android:name=".Activity.SetFriendNotiActivity"
             android:label="Thông báo vị trí bạn bè"
             android:theme="@style/AppTheme.ActionBar"></activity>
+        <receiver android:name=".Other.AlarmReceiver"/>
     </application>
+
 
 </manifest>

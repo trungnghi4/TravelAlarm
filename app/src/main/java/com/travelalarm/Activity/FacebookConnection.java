@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -36,6 +37,7 @@ public class FacebookConnection extends AppCompatActivity {
 
             @Override
             public void onSuccess(LoginResult loginResult) {
+                Toast.makeText(FacebookConnection.this,"Pass Pass Pass",Toast.LENGTH_LONG).show();
                 Intent mainIntent = new Intent(FacebookConnection.this, MainActivity.class);
                 FacebookConnection.this.startActivity(mainIntent);
             }

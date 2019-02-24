@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -22,22 +23,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.facebook.FacebookSdk;
 import com.travelalarm.Fragment.AlarmListFragment;
 import com.travelalarm.Fragment.AlertsListFragment;
 import com.travelalarm.Fragment.FriendsListFragment;
 import com.travelalarm.Fragment.MapsFragment;
+import com.travelalarm.Fragment.SetTimeAlarmFragment;
+import com.travelalarm.Fragment.TimeAlarmListFragment;
 import com.travelalarm.Service.AppService;
 import com.travelalarm.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    private NavigationView navigationView;
+    public static TextView notiCounter;
+    public static View NotiView;
+
+    public static NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private View navHeader;
     private ImageView imgProfile;
     private TextView txtName;
     private Toolbar toolbar;
+
 
     //index to identify current menu item
     public static int navItemIndex = 0;
@@ -46,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG_MAP = "map";
     private static final String TAG_ALARM = "alarm";
     private static final String TAG_FRIENDS = "friends";
+    private static final String TAG_ALERTS = "alerts";
+    private static final String TAG_TIME_ALARM = "time_alarm";
+    private static final String TAG_TIME_LIST = "time_list";
+
+
     public static String CURRENT_TAG = TAG_MAP;
 
     //toolbar titles respected to selected nav menu item
@@ -67,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+//        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View view = inflater.inflate(R.layout.menu_dot, null);
+//        notiCounter = (TextView) navigationView.getMenu().findItem(R.id.notification_counter).getActionView();
 
         //Navigation view header
         navHeader = navigationView.getHeaderView(0);
@@ -97,20 +114,24 @@ public class MainActivity extends AppCompatActivity {
      */
     private void loadNavHeader() {
         SharedPreferences sharedPreferences = this.getSharedPreferences("user_info", Context.MODE_PRIVATE);
-        Log.e("MainActivity", "loadNavHeader");
         if(sharedPreferences != null) {
-            Log.e("MainActivity", "user name : " + sharedPreferences.getString("name", "User name"));
             txtName.setText(sharedPreferences.getString("name", "User name"));
 
             //load profile image
             Glide.with(this).load(sharedPreferences.getString("avatarURL", "avatar"))
+
+//                    .error(VectorDrawableCompat.create(getResources(), R.drawable.ic_account, null))
+                    .apply(RequestOptions.circleCropTransform())
                     .thumbnail(0.5f)
                     .into(imgProfile);
+
+            navigationView.getMenu().getItem(2).setActionView(R.layout.menu_dot);
+
         }
     }
 
     /***
-     * Return respected fragment that user
+     * Return respected fragment which was
      * selected from navigation menu
      */
     private void loadHomeFragment() {
@@ -156,9 +177,18 @@ public class MainActivity extends AppCompatActivity {
                 MapsFragment mapsFragment = new MapsFragment();
                 return mapsFragment;
             case 1:
+                SetTimeAlarmFragment setTimeAlarmFragment = new SetTimeAlarmFragment();
+                return setTimeAlarmFragment;
+            case 2:
+                AlertsListFragment alertsListFragment = new AlertsListFragment();
+                return alertsListFragment;
+            case 3:
                 AlarmListFragment alarmListFragment = new AlarmListFragment();
                 return alarmListFragment;
-            case 2:
+            case 4:
+                TimeAlarmListFragment timeAlarmListFragment=new TimeAlarmListFragment();
+                return timeAlarmListFragment;
+            case 5:
                 FriendsListFragment friendsListFragment = new FriendsListFragment();
                 return friendsListFragment;
             default:
@@ -183,14 +213,35 @@ public class MainActivity extends AppCompatActivity {
                         navItemIndex = 0;
                         CURRENT_TAG = TAG_MAP;
                         break;
-                    case R.id.nav_alarm:
+                    case R.id.nav_time_alarm:
                         navItemIndex = 1;
+                        CURRENT_TAG = TAG_TIME_ALARM;
+                        break;
+                    case R.id.nav_alerts:
+                        navItemIndex = 2;
+                        CURRENT_TAG = TAG_ALERTS;
+                        break;
+                    case R.id.nav_alarm_list:
+                        navItemIndex = 3;
                         CURRENT_TAG = TAG_ALARM;
                         break;
+                    case R.id.nav_time_list:
+                        navItemIndex = 4;
+                        CURRENT_TAG = TAG_TIME_LIST;
+                        break;
                     case R.id.nav_friends:
-                        navItemIndex = 2;
+                        navItemIndex = 5;
                         CURRENT_TAG = TAG_FRIENDS;
                         break;
+                    case R.id.nav_share:
+                        Intent i = new Intent(Intent.ACTION_SEND);
+                        i.setType("text/plain");
+                        i.putExtra(Intent.EXTRA_SUBJECT, getResources().getText(R.string.app_name));
+                        String sAux = "\n" + getResources().getText(R.string.send_message) + "\n\n";
+                        sAux = sAux + getResources().getText(R.string.link_app) + " \n\n";
+                        i.putExtra(Intent.EXTRA_TEXT, sAux);
+                        startActivity(Intent.createChooser(i, "Choose one"));
+                        return true;
                     case R.id.nav_Logout:
                         SignIn.disconnectFromFacebook();
                         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -198,14 +249,6 @@ public class MainActivity extends AppCompatActivity {
                         Intent mainIntent = new Intent(MainActivity.this, SplashScreen.class);
                         mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(mainIntent);
-                        return true;
-                    case R.id.nav_info:
-                        //start activity info
-                        drawerLayout.closeDrawers();
-                        return true;
-                    case R.id.nav_help:
-                        //start activity help
-                        drawerLayout.closeDrawers();
                         return true;
                     default:
                         navItemIndex = 0;
@@ -275,4 +318,19 @@ public class MainActivity extends AppCompatActivity {
 
         super.onDestroy();
     }
+
+    public static void UpdateNotiCounter(String count)
+    {
+        try
+        {
+            View view = navigationView.getMenu().getItem(3).getActionView();
+            notiCounter = (TextView) view.findViewById(R.id.notification_counter);
+            notiCounter.setText(count);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
 }

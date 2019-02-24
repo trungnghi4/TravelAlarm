@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.travelalarm.Data.DatabaseHelper;
 import com.travelalarm.Data.FirebaseHandle;
 import com.travelalarm.Data.FriendInfo;
@@ -81,6 +82,7 @@ public class FriendsListAdapter extends BaseAdapter {
         }
 
         Glide.with(context).load(accounts.get(i).getAvatarURL())
+                .apply(RequestOptions.circleCropTransform())
                 .thumbnail(0.5f)
                 .into(holder.friend_avatar);
 
@@ -111,10 +113,10 @@ public class FriendsListAdapter extends BaseAdapter {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 FirebaseHandle.getInstance().setFollowFriend(friendInfo.getId(), b);
                 if(b) {
-                    Toast.makeText(context, context.getResources().getText(R.string.set_follow_friend) + friendInfo.getName(),
+                    Toast.makeText(context, context.getResources().getText(R.string.set_follow_friend) + " " + friendInfo.getName(),
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, context.getResources().getText(R.string.delete_follow_friend) + friendInfo.getName(),
+                    Toast.makeText(context, context.getResources().getText(R.string.delete_follow_friend) + " " + friendInfo.getName(),
                             Toast.LENGTH_SHORT).show();
                 }
             }
