@@ -41,14 +41,14 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBN0-rzCge_etnqsBiQrsQOxuVdps-bA6M" />
 
-        <!--<activity android:name=".Activity.SplashScreen">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+        <activity android:name=".Activity.SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
-        <!--<activity android:name=".Activity.SignIn" />-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activity.SignIn" />
 
         <service android:name=".Service.BackgroundService" />
         <service android:name=".Service.AppService"/>
@@ -59,11 +59,11 @@
             android:showOnLockScreen="true"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activity.MainActivity">
-        <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.MAIN" />-->
 
-        <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+        <!--<category android:name="android.intent.category.LAUNCHER" />-->
+        <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".Activity.SetAlarmActivity"

@@ -23,6 +23,7 @@ public class FacebookConnection extends AppCompatActivity {
     private LoginButton loginButton;
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
+    private String userID;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,8 +38,8 @@ public class FacebookConnection extends AppCompatActivity {
 
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Toast.makeText(FacebookConnection.this,"Pass Pass Pass",Toast.LENGTH_LONG).show();
                 Intent mainIntent = new Intent(FacebookConnection.this, MainActivity.class);
+                mainIntent.putExtra("AVATAR",loginResult.getAccessToken().getUserId());
                 FacebookConnection.this.startActivity(mainIntent);
             }
 

@@ -212,7 +212,6 @@ public class SignIn extends AppCompatActivity implements
 
                             if(mAuth.getCurrentUser() != null)
                                 avatarURL = mAuth.getCurrentUser().getPhotoUrl().toString();
-
                             //update friend database
                             UpdateFriendsDatabase();
                         } catch (Exception e) {
@@ -242,10 +241,13 @@ public class SignIn extends AppCompatActivity implements
                         {
                             e.printStackTrace();
                         }
+
+//                        Toast.makeText(getBaseContext(), userID,Toast.LENGTH_LONG).show();
                     }
 
                 }
         ).executeAsync();
+
     }
 
     private void savePreference(String name, String avatarURL, String userID) {

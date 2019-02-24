@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -15,7 +14,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.facebook.FacebookSdk;
 import com.travelalarm.Fragment.AlarmListFragment;
@@ -30,7 +29,6 @@ import com.travelalarm.Fragment.AlertsListFragment;
 import com.travelalarm.Fragment.FriendsListFragment;
 import com.travelalarm.Fragment.MapsFragment;
 import com.travelalarm.Fragment.SetTimeAlarmFragment;
-import com.travelalarm.Fragment.TimeAlarmListFragment;
 import com.travelalarm.Service.AppService;
 import com.travelalarm.R;
 
@@ -114,16 +112,18 @@ public class MainActivity extends AppCompatActivity {
      */
     private void loadNavHeader() {
         SharedPreferences sharedPreferences = this.getSharedPreferences("user_info", Context.MODE_PRIVATE);
+//        Toast.makeText(getBaseContext(), sharedPreferences.getString("userID", "user ID"),Toast.LENGTH_LONG).show();
+        String userID = sharedPreferences.getString("userID", "user ID");
         if(sharedPreferences != null) {
             txtName.setText(sharedPreferences.getString("name", "User name"));
-
+            String avatarProfile = "http://graph.facebook.com/"+userID+"/picture?type=large&width=100&height=100";
             //load profile image
-            Glide.with(this).load(sharedPreferences.getString("avatarURL", "avatar"))
-
-//                    .error(VectorDrawableCompat.create(getResources(), R.drawable.ic_account, null))
-                    .apply(RequestOptions.circleCropTransform())
-                    .thumbnail(0.5f)
+            Glide.with(this)
+                    .load(avatarProfile)
+                    .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                     .into(imgProfile);
+//                    .error(VectorDrawableCompat.create(getResources(), R.drawable.ic_account, null))
+//                    .thumbnail(0.5f)
 
             navigationView.getMenu().getItem(2).setActionView(R.layout.menu_dot);
 
@@ -186,9 +186,6 @@ public class MainActivity extends AppCompatActivity {
                 AlarmListFragment alarmListFragment = new AlarmListFragment();
                 return alarmListFragment;
             case 4:
-                TimeAlarmListFragment timeAlarmListFragment=new TimeAlarmListFragment();
-                return timeAlarmListFragment;
-            case 5:
                 FriendsListFragment friendsListFragment = new FriendsListFragment();
                 return friendsListFragment;
             default:
@@ -225,23 +222,10 @@ public class MainActivity extends AppCompatActivity {
                         navItemIndex = 3;
                         CURRENT_TAG = TAG_ALARM;
                         break;
-                    case R.id.nav_time_list:
-                        navItemIndex = 4;
-                        CURRENT_TAG = TAG_TIME_LIST;
-                        break;
                     case R.id.nav_friends:
-                        navItemIndex = 5;
+                        navItemIndex = 4;
                         CURRENT_TAG = TAG_FRIENDS;
                         break;
-                    case R.id.nav_share:
-                        Intent i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.putExtra(Intent.EXTRA_SUBJECT, getResources().getText(R.string.app_name));
-                        String sAux = "\n" + getResources().getText(R.string.send_message) + "\n\n";
-                        sAux = sAux + getResources().getText(R.string.link_app) + " \n\n";
-                        i.putExtra(Intent.EXTRA_TEXT, sAux);
-                        startActivity(Intent.createChooser(i, "Choose one"));
-                        return true;
                     case R.id.nav_Logout:
                         SignIn.disconnectFromFacebook();
                         FacebookSdk.sdkInitialize(getApplicationContext());

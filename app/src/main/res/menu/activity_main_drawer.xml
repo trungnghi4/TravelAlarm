@@ -21,17 +21,9 @@
             android:icon="@drawable/ic_alarm"
             android:title="Báo thức khoảng cách" />
         <item
-            android:id="@+id/nav_time_list"
-            android:title="Báo thức thời gian" />
-        <item
             android:id="@+id/nav_friends"
             android:icon="@drawable/ic_friends"
             android:title="Bạn bè"/>
-
-        <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/ic_share"
-            android:title="Chia sẻ"/>
 
         <item
             android:id="@+id/nav_Logout"
