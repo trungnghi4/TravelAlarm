@@ -5,5 +5,8 @@
     <color name="colorAccent">#50ce50</color>
     <color name="colorFriendOffline">#eaecef</color>
     <color name="textColor">#00a600</color>
+    <color name="textColor1">#000000</color>
     <color name="hintColor">#eb50ce50</color>
+    <color name="gray">#cccccc</color>
+    <color name="white">#ffffff</color>
 </resources>

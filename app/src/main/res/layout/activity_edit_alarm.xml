@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.travelalarm.Activity.EditAlarmActivity"
+    tools:context="com.NTQ.travelalarm.Activity.EditAlarmActivity"
     android:orientation="vertical"
     android:background="@android:color/white">
 

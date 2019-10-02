@@ -1,13 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.travelalarm">
+    package="com.NTQ.travelalarm">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality.
+            android:name="androidx.multidex.MultiDexApplication"
+
     -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <application
+        android:name="com.NTQ.travelalarm.App"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="Alarm Travel" />
+
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.NTQ.travelalarm.Activity.SignIn" />
+
+        <activity
+            android:name="com.NTQ.travelalarm.Activity.AlarmActivity"
+            android:screenOrientation="sensorPortrait"
+            android:showOnLockScreen="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.NTQ.travelalarm.Activity.SetAlarmActivity"
+            android:label="Thi?t l?p b�o th?c"
+            android:theme="@style/AppTheme.ActionBar" />
+        <activity
+            android:name="com.NTQ.travelalarm.Activity.EditAlarmActivity"
+            android:label="Ch?nh s?a b�o th?c"
+            android:theme="@style/AppTheme.ActionBar" />
+
+        <activity
+            android:name="com.NTQ.travelalarm.Activity.LoadRingtoneActivity"
+            android:label="Nh?c chu�ng t�y ch?nh"
+            android:theme="@style/AppTheme.ActionBar" />
+<!--        <activity android:name="com.NTQ.travelalarm.Activity.MainActivity">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+
+        <activity android:name="com.NTQ.travelalarm.Activity.EditRingtoneActivity" />
+        <activity
+            android:name="com.NTQ.travelalarm.Activity.LocationFriendActivity"
+            android:label="V? tr� c?a b?n b�"
+            android:theme="@style/AppTheme.ActionBar" />
+        <activity
+            android:name="com.NTQ.travelalarm.Activity.SetFriendNotiActivity"
+            android:label="Th�ng b�o v? tr� b?n b�"
+            android:theme="@style/AppTheme.ActionBar"></activity>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDwUJ-AOtmGvGemX3sy9sRTl7rS3LQEyEs" />
+
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider1468167886551331"
+            android:exported="true" />
+        <receiver android:name="com.NTQ.travelalarm.Other.AlarmReceiver" />
+
+        <service android:name="com.NTQ.travelalarm.Service.BackgroundService" />
+
+        <service android:name="com.NTQ.travelalarm.Service.AppService" />
+
+    </application>
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -15,81 +106,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
-
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="android.support.multidex.MultiDexApplication">
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
-
-        <activity
-            android:name="com.facebook.FacebookActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
-
-        <provider
-            android:name="com.facebook.FacebookContentProvider"
-            android:authorities="com.facebook.app.FacebookContentProvider1468167886551331"
-            android:exported="true" />
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBN0-rzCge_etnqsBiQrsQOxuVdps-bA6M" />
-
-        <activity android:name=".Activity.SplashScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".Activity.SignIn" />
-
-        <service android:name=".Service.BackgroundService" />
-        <service android:name=".Service.AppService"/>
-
-        <activity
-            android:name=".Activity.AlarmActivity"
-            android:screenOrientation="sensorPortrait"
-            android:showOnLockScreen="true"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.MainActivity">
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.MAIN" />-->
-
-        <!--<category android:name="android.intent.category.LAUNCHER" />-->
-        <!--</intent-filter>-->
-        </activity>
-        <activity
-            android:name=".Activity.SetAlarmActivity"
-            android:label="Thiết lập báo thức"
-            android:theme="@style/AppTheme.ActionBar" />
-        <activity
-            android:name=".Activity.EditAlarmActivity"
-            android:label="Chỉnh sửa báo thức"
-            android:theme="@style/AppTheme.ActionBar" />
-        <activity
-            android:name=".Activity.LoadRingtoneActivity"
-            android:label="Nhạc chuông tùy chỉnh"
-            android:theme="@style/AppTheme.ActionBar" />
-        <activity
-            android:name=".Activity.EditRingtoneActivity"
-            android:label="Nhạc chuông"
-            android:theme="@style/AppTheme.ActionBar" />
-        <activity
-            android:name=".Activity.LocationFriendActivity"
-            android:label="Vị trí của bạn bè"
-            android:theme="@style/AppTheme.ActionBar" />
-        <activity android:name=".Activity.SetFriendNotiActivity"
-            android:label="Thông báo vị trí bạn bè"
-            android:theme="@style/AppTheme.ActionBar"></activity>
-        <receiver android:name=".Other.AlarmReceiver"/>
-    </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
