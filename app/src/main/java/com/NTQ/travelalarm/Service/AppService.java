@@ -31,7 +31,7 @@ import java.util.List;
 public class AppService extends Service implements LocationListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        com.google.android.gms.location.LocationListener{
+        com.google.android.gms.location.LocationListener {
 
     public static List<FriendInfo> friendNear;
     int countNoti = 0;
@@ -53,7 +53,7 @@ public class AppService extends Service implements LocationListener,
         buildGoogleApiClient();
 
         List<Route> listRouteEnable = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE + " WHERE isEnable = 1");
-        if(listRouteEnable.size() > 0) {
+        if (listRouteEnable.size() > 0) {
             Intent intent = new Intent(this, BackgroundService.class);
             startService(intent);
         }
@@ -65,7 +65,7 @@ public class AppService extends Service implements LocationListener,
 
     private boolean isHasRoute(Route route, List<Route> listRoute) {
         for (Route localRoute : listRoute) {
-            if(route.getId() == localRoute.getId())
+            if (route.getId() == localRoute.getId())
                 return true;
         }
         return false;
@@ -86,7 +86,7 @@ public class AppService extends Service implements LocationListener,
 //        }
 
         //neu khong phai dang nhap lan dau, dong bo hoa dư lieu tu may len firebase
-        if(!SignIn.isLoginFirst) {
+        if (!SignIn.isLoginFirst) {
             //cap nhat nhưng bao thuc tu may len firebase
             List<Route> listRoute = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE);
 
@@ -122,7 +122,7 @@ public class AppService extends Service implements LocationListener,
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return  START_STICKY;
+        return START_STICKY;
     }
 
     @Override
@@ -186,14 +186,13 @@ public class AppService extends Service implements LocationListener,
                 MainActivity.UpdateNotiCounter((countNoti > 5) ? "5+" : String.valueOf(countNoti));
 
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private boolean isNear(FriendInfo friend, Location location){
-        if(friend.getStatus().equals("online")) {
+    private boolean isNear(FriendInfo friend, Location location) {
+        if (friend.getStatus().equals("online")) {
             Location friendPos = new Location(LocationManager.GPS_PROVIDER);
 
             friendPos.setLatitude(friend.getLatitude());
@@ -226,7 +225,7 @@ public class AppService extends Service implements LocationListener,
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
@@ -252,7 +251,11 @@ public class AppService extends Service implements LocationListener,
         String lat = App.getInstance().getCurrentLocationLat();
         String lon = App.getInstance().getCurrentLocationLong();
         Location location = null;
-        if (lat != null && lon != null) {
+        if (lat.equals("") && lon.equals("")) {
+            lat = "10";
+            lon = "106";
+        }
+        if (lon != null) {
             String provider = App.getInstance().getCurrentLocationProvider();
             location = new Location(provider);
             location.setLatitude(Double.parseDouble(lat));

@@ -70,10 +70,16 @@ public class MainActivity extends BaseActivity {
     private Handler mHandle;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public int getLayoutId() {
+        return R.layout.activity_main;
+    }
 
+    @Override
+    public void addControl() {
+    }
+
+    @Override
+    public void addEvent() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -100,7 +106,7 @@ public class MainActivity extends BaseActivity {
         //initializing navigation menu
         setUpNavigationView();
 
-        if(savedInstanceState == null) {
+        if(getBundleBaseActivity() == null) {
             navItemIndex = 0;
             CURRENT_TAG = TAG_MAP;
             loadHomeFragment();

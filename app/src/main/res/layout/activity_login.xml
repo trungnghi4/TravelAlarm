@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scaleY="1.08">
+    android:scaleY="1.08"
+    tools:context=".Activity.SignIn">
 
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/splashscreen">
-
+        <TextView
+            android:id="@+id/tv_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginTop="100dp"
+            />
         <com.facebook.login.widget.LoginButton
-            android:id="@+id/login_button"
+            android:id="@+id/loginButton"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"
@@ -20,5 +24,4 @@
             android:layout_marginTop="60dp"
             android:background="#0759ff"
             android:textColor="#ffffff" />
-    </FrameLayout>
 </LinearLayout>

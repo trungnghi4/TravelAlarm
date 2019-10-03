@@ -25,14 +25,12 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".Activity.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -62,14 +60,14 @@
             android:name="com.NTQ.travelalarm.Activity.LoadRingtoneActivity"
             android:label="Nh?c chu�ng t�y ch?nh"
             android:theme="@style/AppTheme.ActionBar" />
-<!--        <activity android:name="com.NTQ.travelalarm.Activity.MainActivity">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+        <activity android:name="com.NTQ.travelalarm.Activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity android:name="com.NTQ.travelalarm.Activity.EditRingtoneActivity" />
         <activity

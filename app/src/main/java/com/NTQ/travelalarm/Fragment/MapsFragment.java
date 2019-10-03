@@ -50,6 +50,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+
 import com.google.android.libraries.places.compat.Place;
 
 
@@ -106,7 +107,7 @@ public class MapsFragment extends Fragment {
         fabSetAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mCurrentDestination != null) {
+                if (mCurrentDestination != null) {
                     Intent intent = new Intent(context, SetAlarmActivity.class);
                     intent.putExtra("latitude", mCurrentDestination.getLatitude());
                     intent.putExtra("longitude", mCurrentDestination.getLongitude());
@@ -128,12 +129,16 @@ public class MapsFragment extends Fragment {
     private void onMyMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mapsHandle = MapsHandle.getInstance(context, mMap);
+        mapsHandle.setMyLocationEnable(true);
 
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                //show current location
+                mapsHandle.setMyLocationEnable(true);
                 // Hiển thị vị trí người dùng.
                 askPermissionsAndShowMyLocation();
+
             }
         });
 
@@ -168,13 +173,12 @@ public class MapsFragment extends Fragment {
                 //request permission
                 ActivityCompat.requestPermissions(getActivity(), permissions,
                         REQUEST_ID_ACCESS_COURSE_FINE_LOCATION);
-
                 return;
             }
         }
 
         //show current location
-        this.showMyLocation();
+        showMyLocation();
         mapsHandle.setMyLocationEnable(true);
     }
 
@@ -204,7 +208,7 @@ public class MapsFragment extends Fragment {
 
     //hien thi dia diem hien tai khi moi vua load xong ban do
     private void showMyLocation() {
-        if(AppService.getCurrentPosition() != null) {
+        if (AppService.getCurrentPosition() != null) {
             LatLng latLng = new LatLng(AppService.getCurrentPosition().getLatitude(), AppService.getCurrentPosition().getLongitude());
 
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -213,7 +217,6 @@ public class MapsFragment extends Fragment {
             showSettingsAlert();
         }
     }
-
 
 
     //gan marker cho diem den va ve duong noi va tinh khoang cach giua diem hien tai va diem den
@@ -226,7 +229,7 @@ public class MapsFragment extends Fragment {
         searchLocation.setLatitude(latLng.latitude);
         searchLocation.setLongitude(latLng.longitude);
 
-        if(AppService.getCurrentPosition() != null) {
+        if (AppService.getCurrentPosition() != null) {
             List<Location> list = new ArrayList<>();
             list.add(AppService.getCurrentPosition());
             list.add(searchLocation);
@@ -305,16 +308,16 @@ public class MapsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(context, data);
                 LatLng latLng = place.getLatLng();
                 mDestinationInfo = place.getName().toString();
 
                 addDestinationMarker(latLng);
-            } else if(resultCode == PlaceAutocomplete.RESULT_ERROR) {
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(context, data);
-            } else if(resultCode == RESULT_CANCELED) {
+            } else if (resultCode == RESULT_CANCELED) {
             }
         }
     }
@@ -368,9 +371,9 @@ public class MapsFragment extends Fragment {
         final Bitmap circleBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         final Path path = new Path();
-        path.addCircle((float) width/2,
-                (float) height/2,
-                (float) Math.min(width, height/2),
+        path.addCircle((float) width / 2,
+                (float) height / 2,
+                (float) Math.min(width, height / 2),
                 Path.Direction.CCW);
 
         final Canvas canvas = new Canvas(circleBitmap);

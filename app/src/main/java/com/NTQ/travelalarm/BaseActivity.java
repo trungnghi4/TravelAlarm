@@ -27,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public abstract class BaseActivity extends AppCompatActivity implements BaseView {
+    Bundle bundleBaseActivity;
     public enum ENUM_ACTIVITY_STATUS {
         ON_START,
         ON_RESUME,
@@ -34,6 +35,14 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
         ON_DESTROY,
         ON_RESTART,
         ON_STOP
+    }
+
+    public Bundle getBundleBaseActivity() {
+        return bundleBaseActivity;
+    }
+
+    public void setBundleBaseActivity(Bundle bundleBaseActivity) {
+        this.bundleBaseActivity = bundleBaseActivity;
     }
 
     public int getLayoutId() {
@@ -58,14 +67,14 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        bundleBaseActivity = savedInstanceState;
         /* Do not allow device change to landscape layout */
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-//        setContentView(getLayoutId());
+        setContentView(getLayoutId());
         ButterKnife.bind(this);
-//        addControl();
-//        addEvent();
+        addControl();
+        addEvent();
 
 
         App app = (App) getApplicationContext();

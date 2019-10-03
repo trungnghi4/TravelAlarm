@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.NTQ.travelalarm.BaseActivity;
 import com.NTQ.travelalarm.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class SplashScreen extends BaseActivity {
@@ -13,10 +14,16 @@ public class SplashScreen extends BaseActivity {
     protected int _splashTime = 3000;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splashscreen);
+    public int getLayoutId() {
+        return R.layout.activity_splashscreen;
+    }
 
+    @Override
+    public void addControl() {
+    }
+
+    @Override
+    public void addEvent() {
         Thread splashTread = new Thread() {
             @Override
             public void run() {
@@ -39,6 +46,14 @@ public class SplashScreen extends BaseActivity {
             }
         };
         splashTread.start();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splashscreen);
+
+
     }
 
     @Override
