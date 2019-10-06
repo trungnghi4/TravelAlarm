@@ -1,42 +1,42 @@
 {
   "project_info": {
-    "project_number": "449540528989",
-    "firebase_url": "https://travelalarm-e9d34.firebaseio.com",
-    "project_id": "travelalarm-e9d34",
-    "storage_bucket": "travelalarm-e9d34.appspot.com"
+    "project_number": "1080790915999",
+    "firebase_url": "https://travelalarm-951a1.firebaseio.com",
+    "project_id": "travelalarm-951a1",
+    "storage_bucket": "travelalarm-951a1.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:449540528989:android:b87749c502770c0967e6b4",
+        "mobilesdk_app_id": "1:1080790915999:android:6bb70ad342bdb379947baa",
         "android_client_info": {
           "package_name": "com.NTQ.travelalarm"
         }
       },
       "oauth_client": [
         {
-          "client_id": "449540528989-giae9msibure4v8sbr2os990f6qqn7jr.apps.googleusercontent.com",
+          "client_id": "1080790915999-r14q3npu9ph65gjvglr5he3kdggtgekj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.NTQ.travelalarm",
-            "certificate_hash": "cf4ebf7d63440eaddb1ede70ef22929756257eac"
+            "certificate_hash": "5b1ff81a28bd85fabfdf8bf8c34daf51f5db30e7"
           }
         },
         {
-          "client_id": "449540528989-n0333mlfb3ctn3bs5so49gguf54cf8f6.apps.googleusercontent.com",
+          "client_id": "1080790915999-9clalbthuvdqfqur5l74e1n38hoa4em9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAWqRVWkaQyuHcpAdCRIIHhLiQNVxvZRZc"
+          "current_key": "AIzaSyDx7xoHslQfO7Xljb4O5nwAUK2kZmQ4pPM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "449540528989-n0333mlfb3ctn3bs5so49gguf54cf8f6.apps.googleusercontent.com",
+              "client_id": "1080790915999-9clalbthuvdqfqur5l74e1n38hoa4em9.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
