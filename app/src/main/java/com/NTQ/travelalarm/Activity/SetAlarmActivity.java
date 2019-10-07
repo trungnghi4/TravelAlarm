@@ -12,11 +12,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.NTQ.travelalarm.App;
 import com.NTQ.travelalarm.BaseActivity;
 import com.NTQ.travelalarm.Data.DatabaseHelper;
 import com.NTQ.travelalarm.Data.Route;
 import com.NTQ.travelalarm.R;
 import com.NTQ.travelalarm.Service.BackgroundService;
+import com.NTQ.travelalarm.Utils.CommonUtils;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.DecimalFormat;
 
@@ -44,10 +47,16 @@ public class SetAlarmActivity extends BaseActivity {
     private Intent intentService;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_set_alarm);
+    public int getLayoutId() {
+        return R.layout.activity_set_alarm;
+    }
 
+    @Override
+    public void addControl() {
+    }
+
+    @Override
+    public void addEvent() {
         dbHelper = new DatabaseHelper(this);
 
         editDesName = (EditText) findViewById(R.id.destination_name);

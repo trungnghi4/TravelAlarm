@@ -33,10 +33,16 @@ public class LoadRingtoneActivity extends BaseActivity {
     HashMap mapRingtone = new HashMap();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_ringtone);
+    public int getLayoutId() {
+        return R.layout.activity_list_ringtone;
+    }
 
+    @Override
+    public void addControl() {
+    }
+
+    @Override
+    public void addEvent() {
         if(ContextCompat.checkSelfPermission(LoadRingtoneActivity.this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {

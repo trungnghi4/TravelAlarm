@@ -157,25 +157,25 @@ public class MapsFragment extends Fragment {
     //kiem tra dieu kien nguoi dung co dong y cho lay dia diem hien tai hay khong
     //neu cho thi hien thi dia diem do
     private void askPermissionsAndShowMyLocation() {
-        //ask permission if API >= 23
-        if (Build.VERSION.SDK_INT >= 23) {
-            int accessCoarsePermission
-                    = ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
-            int accessFinePermission
-                    = ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION);
+            //ask permission if API >= 23
+            if (Build.VERSION.SDK_INT >= 23) {
+                int accessCoarsePermission
+                        = ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
+                int accessFinePermission
+                        = ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-            if (accessCoarsePermission != PackageManager.PERMISSION_GRANTED
-                    || accessFinePermission != PackageManager.PERMISSION_GRANTED) {
+                if (accessCoarsePermission != PackageManager.PERMISSION_GRANTED
+                        || accessFinePermission != PackageManager.PERMISSION_GRANTED) {
 
-                String[] permissions = new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION};
+                    String[] permissions = new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION};
 
-                //request permission
-                ActivityCompat.requestPermissions(getActivity(), permissions,
-                        REQUEST_ID_ACCESS_COURSE_FINE_LOCATION);
-                return;
+                    //request permission
+                    ActivityCompat.requestPermissions(getActivity(), permissions,
+                            REQUEST_ID_ACCESS_COURSE_FINE_LOCATION);
+                    return;
+                }
             }
-        }
 
         //show current location
         showMyLocation();

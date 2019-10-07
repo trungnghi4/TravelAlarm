@@ -32,10 +32,16 @@ public class SetFriendNotiActivity extends BaseActivity {
     private String ringtonePath;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_set_friend_noti);
+    public int getLayoutId() {
+        return R.layout.activity_set_friend_noti;
+    }
 
+    @Override
+    public void addControl() {
+    }
+
+    @Override
+    public void addEvent() {
         friendDesInfo = (TextView) findViewById(R.id.friend_des_info);
         friendDis = (TextView) findViewById(R.id.friend_dis);
         friendMinDis = (TextView) findViewById(R.id.friend_min_dis);

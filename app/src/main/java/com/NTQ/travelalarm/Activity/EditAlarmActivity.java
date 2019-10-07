@@ -14,10 +14,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.NTQ.travelalarm.App;
 import com.NTQ.travelalarm.BaseActivity;
 import com.NTQ.travelalarm.Data.DatabaseHelper;
 import com.NTQ.travelalarm.Data.Route;
 import com.NTQ.travelalarm.R;
+import com.NTQ.travelalarm.Utils.CommonUtils;
 
 import java.text.DecimalFormat;
 
@@ -42,10 +44,16 @@ public class EditAlarmActivity extends BaseActivity {
     private String mRingtonePath;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_alarm);
+    public int getLayoutId() {
+        return R.layout.activity_edit_alarm;
+    }
 
+    @Override
+    public void addControl() {
+    }
+
+    @Override
+    public void addEvent() {
         dbHelper = new DatabaseHelper(this);
 
         editDesName = (EditText) findViewById(R.id.edit_name_des);
@@ -135,11 +143,11 @@ public class EditAlarmActivity extends BaseActivity {
                 dialog.setMessage(getResources().getText(R.string.warning_exit));
                 dialog.setPositiveButton(getResources().getText(R.string.exit),
                         new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        onBackPressed();
-                    }
-                });
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                onBackPressed();
+                            }
+                        });
                 dialog.setNegativeButton(getResources().getText(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

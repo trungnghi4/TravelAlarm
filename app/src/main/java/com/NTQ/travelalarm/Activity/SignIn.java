@@ -17,9 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.NTQ.travelalarm.App;
 import com.NTQ.travelalarm.BaseActivity;
 import com.NTQ.travelalarm.Data.FirebaseHandle;
 import com.NTQ.travelalarm.R;
+import com.NTQ.travelalarm.Utils.CommonUtils;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -75,6 +77,7 @@ public class SignIn extends BaseActivity implements
 
     @Override
     public void addControl() {
+        CommonUtils.askPermissionsAndShowMyLocation(App.getContext(),this);
     }
 
     @Override

@@ -34,10 +34,16 @@ public class LocationFriendActivity extends BaseActivity {
     private FriendInfo account;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location_friend);
+    public int getLayoutId() {
+        return R.layout.activity_location_friend;
+    }
 
+    @Override
+    public void addControl() {
+    }
+
+    @Override
+    public void addEvent() {
         showMyLocation();
 
         SupportMapFragment supportMapFragment =

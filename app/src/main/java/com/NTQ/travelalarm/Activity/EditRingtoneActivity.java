@@ -52,9 +52,16 @@ public class EditRingtoneActivity extends BaseActivity implements View.OnClickLi
     private ListView listRingtone;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_ringtone);
+    public int getLayoutId() {
+        return R.layout.activity_edit_ringtone;
+    }
+
+    @Override
+    public void addControl() {
+    }
+
+    @Override
+    public void addEvent() {
         // binding view
         ButterKnife.bind(this);
 

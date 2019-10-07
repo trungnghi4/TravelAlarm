@@ -1,5 +1,15 @@
 package com.NTQ.travelalarm.Utils;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import static com.NTQ.travelalarm.Fragment.MapsFragment.REQUEST_ID_ACCESS_COURSE_FINE_LOCATION;
+
 public class CommonUtils {
     /**
      * Function to convert milliseconds time to
@@ -36,5 +46,28 @@ public class CommonUtils {
 
         // return timer string
         return finalTimerString;
+    }
+
+    //kiem tra dieu kien nguoi dung co dong y cho lay dia diem hien tai hay khong
+    //neu cho thi hien thi dia diem do
+    public static void askPermissionsAndShowMyLocation(Context context, Activity activity) {
+        //ask permission if API >= 23
+        if (Build.VERSION.SDK_INT >= 23) {
+            int accessCoarsePermission
+                    = ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
+            int accessFinePermission
+                    = ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+            if (accessCoarsePermission != PackageManager.PERMISSION_GRANTED
+                    || accessFinePermission != PackageManager.PERMISSION_GRANTED) {
+
+                String[] permissions = new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION};
+
+                //request permission
+                ActivityCompat.requestPermissions(activity, permissions,
+                        REQUEST_ID_ACCESS_COURSE_FINE_LOCATION);
+            }
+        }
     }
 }
