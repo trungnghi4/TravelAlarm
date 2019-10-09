@@ -60,14 +60,7 @@
             android:name="com.NTQ.travelalarm.Activity.LoadRingtoneActivity"
             android:label="Nh?c chu�ng t�y ch?nh"
             android:theme="@style/AppTheme.ActionBar" />
-        <activity android:name="com.NTQ.travelalarm.Activity.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name="com.NTQ.travelalarm.Activity.MainActivity"/>
 
         <activity android:name="com.NTQ.travelalarm.Activity.EditRingtoneActivity" />
         <activity
@@ -77,7 +70,7 @@
         <activity
             android:name="com.NTQ.travelalarm.Activity.SetFriendNotiActivity"
             android:label="Th�ng b�o v? tr� b?n b�"
-            android:theme="@style/AppTheme.ActionBar"></activity>
+            android:theme="@style/AppTheme.ActionBar" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />

@@ -5,13 +5,21 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import androidx.multidex.MultiDexApplication;
+
 import com.NTQ.travelalarm.Other.Constants;
 
-public class App extends Application {
+public class App extends MultiDexApplication {
     public double currentLocationLat;
+    private static Context context;
     public double currentLocationLong;
     public String locationProvider;
     private static App singleton;
+
+    public static Context getContext() {
+        return context;
+    }
+
 
     private static Application application;
     public static App getInstance() {
@@ -20,9 +28,7 @@ public class App extends Application {
     private static Application getApplication(){
         return application;
     }
-    public static Context getContext(){
-        return getApplication().getApplicationContext();
-    }
+
     public SharedPreferences getSettingPreference() {
         return PreferenceManager.getDefaultSharedPreferences(getApplication().getApplicationContext());
     }
@@ -30,6 +36,7 @@ public class App extends Application {
     public void onCreate(){
         super.onCreate();
         application = this;
+        context = getApplicationContext();
         singleton = this;
     }
 

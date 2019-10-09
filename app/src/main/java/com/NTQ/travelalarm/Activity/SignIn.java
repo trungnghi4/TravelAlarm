@@ -110,48 +110,11 @@ public class SignIn extends BaseActivity implements
     {
         mCallbackManager = CallbackManager.Factory.create();
 //        LoginButton loginButton = (LoginButton) findViewById(R.id.loginButton);
-//        loginButton.setReadPermissions(Arrays.asList(
-//                "public_profile", "email", "user_friends"));
-//        Log.d(TAG, "init");
-//        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList(
-//                "public_profile", "email", "user_friends"));
-//        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-//
-//            // Đăng nhập vào facebook lần đầu tiên
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//
-//                LoginButton loginButton1 = (LoginButton) findViewById(R.id.loginButton);
-//                loginButton1.setVisibility(View.INVISIBLE);
-//
-//
-//
-//                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-//                handleFacebookAccessToken(loginResult.getAccessToken());
-//                LoginFacebookHandle();
-//
-//                isLoginFirst = true;
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                Log.d(TAG, "facebook:onCancel");
-//                // ...
-//            }
-//
-//            @Override
-//            public void onError(FacebookException error) {
-//                Log.d(TAG, "facebook:onError", error);
-//                // ...
-//            }
-//        });
-//
-//
-//        if (isLoggedIn()) {
-//            LoginButton loginButton1 = (LoginButton) findViewById(R.id.loginButton);
-//            loginButton1.setVisibility(View.INVISIBLE);
-//            LoginFacebookHandle();
-//        }
+        loginButton.setReadPermissions(Arrays.asList(
+                "public_profile", "email", "user_friends"));
+        Log.d(TAG, "init");
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList(
+                "public_profile", "email", "user_friends"));
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -174,6 +137,12 @@ public class SignIn extends BaseActivity implements
                 Log.d(TAG, "facebook:onError", e);
             }
         });
+        if (isLoggedIn()) {
+            LoginButton loginButton1 = (LoginButton) findViewById(R.id.loginButton);
+            loginButton1.setVisibility(View.INVISIBLE);
+            LoginFacebookHandle();
+        }
+
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
@@ -299,56 +268,56 @@ public class SignIn extends BaseActivity implements
         request.executeAsync();
 
 
-//        new GraphRequest(
-//                AccessToken.getCurrentAccessToken(),
-//                "/" + getAccessToken().getUserId(),
-//                null,
-//                HttpMethod.GET,
-//                new GraphRequest.Callback() {
-//                    public void onCompleted(GraphResponse response) {
-//                        JSONObject jsonObject = response.getJSONObject();
-//                        String name = "", id = "", avatarURL = "";
-//                        try {
-//                            name = jsonObject.getString("name");
-//                            id =jsonObject.getString("id");
-//                            userID = id;
-//
-//                            if(mAuth.getCurrentUser() != null)
-//                                avatarURL = mAuth.getCurrentUser().getPhotoUrl().toString();
-//
-//                            //update friend database
-//                            UpdateFriendsDatabase();
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-//
-//                        try {
-//                            if(id != "")
-//                            {
-//                                ref.child(FB_ACCOUNT).child(id).child("name").setValue(name);
-//
-//                                ref.child(FB_ACCOUNT).child(id).child("avatarURL").setValue("");
-//                                ref.child(FB_ACCOUNT).child(id).child("avatarURL").setValue(avatarURL);
-//
-//                                savePreference(name, avatarURL, id);
-//
-//                                FirebaseHandle.getInstance().setUserID(id);
-//                            }
-//                            Log.d("Chuyenscene" , "scene");
-//                            //Khoi chay mainActivity
-//                            Intent mainIntent = new Intent(SignIn.this, MainActivity.class);
-//                            startActivity(mainIntent);
-//
-//                        }catch (Exception e)
-//                        {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                }
-//        ).executeAsync();
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + getAccessToken().getUserId(),
+                null,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        JSONObject jsonObject = response.getJSONObject();
+                        String name = "", id = "", avatarURL = "";
+                        try {
+                            name = jsonObject.getString("name");
+                            id =jsonObject.getString("id");
+                            userID = id;
+
+                            if(mAuth.getCurrentUser() != null)
+                                avatarURL = mAuth.getCurrentUser().getPhotoUrl().toString();
+
+                            //update friend database
+                            UpdateFriendsDatabase();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+
+                        try {
+                            if(id != "")
+                            {
+                                ref.child(FB_ACCOUNT).child(id).child("name").setValue(name);
+
+                                ref.child(FB_ACCOUNT).child(id).child("avatarURL").setValue("");
+                                ref.child(FB_ACCOUNT).child(id).child("avatarURL").setValue(avatarURL);
+
+                                savePreference(name, avatarURL, id);
+
+                                FirebaseHandle.getInstance().setUserID(id);
+                            }
+                            Log.d("Chuyenscene" , "scene");
+                            //Khoi chay mainActivity
+                            Intent mainIntent = new Intent(SignIn.this, MainActivity.class);
+                            startActivity(mainIntent);
+
+                        }catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+        ).executeAsync();
     }
 
     private void savePreference(String name, String avatarURL, String userID) {

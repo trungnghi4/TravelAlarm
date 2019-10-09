@@ -59,7 +59,7 @@ public class AppService extends Service implements LocationListener,
             startService(intent);
         }
 
-//        FirebaseHandle.getInstance().setStatusChange();
+        FirebaseHandle.getInstance().setStatusChange();
 
         friendNear = new ArrayList<>();
     }
@@ -74,40 +74,40 @@ public class AppService extends Service implements LocationListener,
 
     private void syncData() {
         //neu la lan dang nhap dau tien
-//        if(SignIn.isLoginFirst) {
-//            List<Route> routeList = FirebaseHandle.getInstance().getListRoute();
-//            DatabaseHelper dbHelper = new DatabaseHelper(AppService.this);
-//            dbHelper.deleteAllData();
-//
-//            if (routeList != null) {
-//                for (Route route : routeList) {
-//                    dbHelper.insertRouteWithId(route);
-//                }
-//            }
-//        }
+        if(SignIn.isLoginFirst) {
+            List<Route> routeList = FirebaseHandle.getInstance().getListRoute();
+            DatabaseHelper dbHelper = new DatabaseHelper(AppService.this);
+            dbHelper.deleteAllData();
+
+            if (routeList != null) {
+                for (Route route : routeList) {
+                    dbHelper.insertRouteWithId(route);
+                }
+            }
+        }
 
         //neu khong phai dang nhap lan dau, dong bo hoa dư lieu tu may len firebase
         if (!SignIn.isLoginFirst) {
             //cap nhat nhưng bao thuc tu may len firebase
             List<Route> listRoute = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE);
 
-//            for(Route route : listRoute) {
-//                try {
-//                    FirebaseHandle.getInstance().updateRoute(route);
-//                }catch (Exception ex)
-//                {
-//                    ex.printStackTrace();
-//                }
-//            }
+            for(Route route : listRoute) {
+                try {
+                    FirebaseHandle.getInstance().updateRoute(route);
+                }catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
 
-            //xoa nhung bao thuc ma trong may da xoa
-//            List<Route> firebaseRoute = FirebaseHandle.getInstance().getListRoute();
-//            if(firebaseRoute != null) {
-//                for (Route route : firebaseRoute) {
-//                    if (!isHasRoute(route, listRoute))
-//                        FirebaseHandle.getInstance().removeRoute(String.valueOf(route.getId()));
-//                }
-//            }
+//            xoa nhung bao thuc ma trong may da xoa
+            List<Route> firebaseRoute = FirebaseHandle.getInstance().getListRoute();
+            if(firebaseRoute != null) {
+                for (Route route : firebaseRoute) {
+                    if (!isHasRoute(route, listRoute))
+                        FirebaseHandle.getInstance().removeRoute(String.valueOf(route.getId()));
+                }
+            }
         }
 
     }
@@ -129,7 +129,7 @@ public class AppService extends Service implements LocationListener,
     @Override
     public void onLocationChanged(Location location) {
 
-//        currentLocation = location;
+        currentLocation = location;
         App.getInstance().setCurrentLocationLat(location.getLatitude());
         App.getInstance().setCurrentLocationLong(location.getLongitude());
         App.getInstance().setCurrentLocationProvider(location.getProvider());
@@ -262,6 +262,6 @@ public class AppService extends Service implements LocationListener,
             location.setLatitude(Double.parseDouble(lat));
             location.setLongitude(Double.parseDouble(lon));
         }
-        return location;
+        return currentLocation;
     }
 }
