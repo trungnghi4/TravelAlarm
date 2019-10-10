@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.NTQ.travelalarm.Data.FirebaseHandle;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.NTQ.travelalarm.Data.FriendInfo;
@@ -61,11 +62,11 @@ public class FriendsListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        final ViewHolder holder;
+        final FriendsListAdapter.ViewHolder holder;
 
         if(view == null) {
             view = inflater.inflate(R.layout.fragment_friends, null);
-            holder = new ViewHolder();
+            holder = new FriendsListAdapter.ViewHolder();
             holder.friend_avatar = (ImageView) view.findViewById(R.id.img_avatar);
             holder.friend_name = (TextView) view.findViewById(R.id.friend_name);
             holder.itemLayout = (LinearLayout) view.findViewById(R.id.friend_item);
@@ -73,7 +74,7 @@ public class FriendsListAdapter extends BaseAdapter {
             holder.friend_distance = (TextView) view.findViewById(R.id.friend_distance);
             view.setTag(holder);
         } else{
-            holder = (ViewHolder) view.getTag();
+            holder = (FriendsListAdapter.ViewHolder) view.getTag();
         }
 
         Glide.with(context).load(accounts.get(i).getAvatarURL())
@@ -89,10 +90,10 @@ public class FriendsListAdapter extends BaseAdapter {
         if(accounts.get(i).getStatus().equals(ONLINE)) {
             holder.itemLayout.setBackgroundColor(Color.WHITE);
             DecimalFormat decimalFormat = new DecimalFormat("0.00");
-//            Double distance = FirebaseHandle.getInstance().getDistanceFromFriend(accounts.get(i).getId());
-//            holder.friend_distance.setText((distance < 1000) ?
-//                    (context.getResources().getText(R.string.distance_with_user) + decimalFormat.format(distance) + " m")
-//                    : (context.getResources().getText(R.string.distance_with_user)  + decimalFormat.format(distance / 1000.0) + " km"));
+            Double distance = FirebaseHandle.getInstance().getDistanceFromFriend(accounts.get(i).getId());
+            holder.friend_distance.setText((distance < 1000) ?
+                    (context.getResources().getText(R.string.distance_with_user) + decimalFormat.format(distance) + " m")
+                    : (context.getResources().getText(R.string.distance_with_user)  + decimalFormat.format(distance / 1000.0) + " km"));
         }
         else {
             holder.friend_distance.setText(context.getResources().getText(R.string.friend_offline));
@@ -108,7 +109,7 @@ public class FriendsListAdapter extends BaseAdapter {
         holder.friend_chkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                FirebaseHandle.getInstance().setFollowFriend(friendInfo.getId(), b);
+                FirebaseHandle.getInstance().setFollowFriend(friendInfo.getId(), b);
                 if(b) {
                     Toast.makeText(context, context.getResources().getText(R.string.set_follow_friend) + " " + friendInfo.getName(),
                             Toast.LENGTH_SHORT).show();

@@ -11,9 +11,11 @@ import android.graphics.Canvas;
 import android.graphics.Path;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,9 +31,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.NTQ.travelalarm.Activity.SetAlarmActivity;
+import com.NTQ.travelalarm.Data.FirebaseHandle;
+import com.NTQ.travelalarm.Data.FriendInfo;
 import com.NTQ.travelalarm.Other.MapsHandle;
 import com.NTQ.travelalarm.R;
 import com.NTQ.travelalarm.Service.AppService;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
@@ -40,7 +45,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.compat.AutocompleteFilter;
 import com.google.android.libraries.places.compat.ui.PlaceAutocomplete;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -50,6 +57,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.NTQ.travelalarm.Other.Constants.ONLINE;
 
 import com.google.android.libraries.places.compat.Place;
 
@@ -285,8 +293,8 @@ public class MapsFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search)
             onMapSearch();
-//        if (id == R.id.action_show_friends)
-//            showFriends();
+        if (id == R.id.action_show_friends)
+            showFriends();
         return super.onOptionsItemSelected(item);
     }
 
@@ -322,48 +330,48 @@ public class MapsFragment extends Fragment {
         }
     }
 //
-//    public void showFriends() {
-//        List<FriendInfo> friends = FirebaseHandle.getInstance().getListFriends();
-//        final MarkerOptions markerOptions = new MarkerOptions();
-//        int friendShowed = 0;
-//        if(friends != null) {
-//            for (final FriendInfo friend : friends) {
-//                if (friend.isFollowing() && friend.getStatus().equals(ONLINE)) {
-//                    friendShowed++;
-//                    markerOptions.position(new LatLng(friend.getLatitude(), friend.getLongitude()));
-//                    new AsyncTask<Void, Void, Void>() {
-//                        @Override
-//                        protected void onPostExecute(Void aVoid) {
-//                            super.onPostExecute(aVoid);
-//                            mMap.addMarker(markerOptions);
-//                        }
-//
-//                        @Override
-//                        protected Void doInBackground(Void... voids) {
-//                            try {
-//
-//                                Bitmap bitmap = Glide.with(context)
-//                                        .load(friend.getAvatarURL())
-//                                        .asBitmap()
-//                                        .into(-1, -1).get();
-//
-//                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(circleBitmap(bitmap)));
-//
-//                            } catch (Exception ex) {
-//                                Log.e("LocationFriendActivity", ex.getMessage());
-//                            }
-//                            return null;
-//                        }
-//                    }.execute();
-//                }
-//            }
-//        }
-//
-//        if(friendShowed == 0) {
-//            Toast.makeText(context, "Bạn bè mà bạn theo dõi hiện đã offline hoặc bạn không theo dõi bạn bè nào",
-//                    Toast.LENGTH_SHORT).show();
-//        }
-//    }
+    public void showFriends() {
+        List<FriendInfo> friends = FirebaseHandle.getInstance().getListFriends();
+        final MarkerOptions markerOptions = new MarkerOptions();
+        int friendShowed = 0;
+        if(friends != null) {
+            for (final FriendInfo friend : friends) {
+                if (friend.isFollowing() && friend.getStatus().equals(ONLINE)) {
+                    friendShowed++;
+                    markerOptions.position(new LatLng(friend.getLatitude(), friend.getLongitude()));
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            super.onPostExecute(aVoid);
+                            mMap.addMarker(markerOptions);
+                        }
+
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            try {
+
+                                Bitmap bitmap = Glide.with(context)
+                                        .load(friend.getAvatarURL())
+                                        .asBitmap()
+                                        .into(-1, -1).get();
+
+                                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(circleBitmap(bitmap)));
+
+                            } catch (Exception ex) {
+                                Log.e("LocationFriendActivity", ex.getMessage());
+                            }
+                            return null;
+                        }
+                    }.execute();
+                }
+            }
+        }
+
+        if(friendShowed == 0) {
+            Toast.makeText(context, "Bạn bè mà bạn theo dõi hiện đã offline hoặc bạn không theo dõi bạn bè nào",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
 
     public static Bitmap circleBitmap(Bitmap bitmap) {
         final int width = bitmap.getWidth();

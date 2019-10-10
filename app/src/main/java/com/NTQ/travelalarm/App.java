@@ -52,7 +52,7 @@ public class App extends MultiDexApplication {
     }
 
     public String getCurrentLocationLong() {
-        return getSettingPreference().getString(Constants.CURRENT_LOCATION_LAT, "");
+        return getSettingPreference().getString(Constants.CURRENT_LOCATION_LONG, "");
     }
 
     public void setCurrentLocationLong(double currentLocationLong) {

@@ -18,9 +18,13 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.NTQ.travelalarm.Activity.LocationFriendActivity;
+import com.NTQ.travelalarm.Data.FirebaseHandle;
 import com.NTQ.travelalarm.Data.FriendInfo;
+import com.NTQ.travelalarm.Other.FriendsListAdapter;
 import com.NTQ.travelalarm.R;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -56,7 +60,7 @@ public class FriendsListFragment extends Fragment {
         context = view.getContext();
 
         listView = (ListView) view.findViewById(R.id.list_friends);
-//        listView.setAdapter(new FriendsListAdapter(getListAccount(), getContext()));
+        listView.setAdapter(new FriendsListAdapter(getListAccount(), getContext()));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -85,7 +89,7 @@ public class FriendsListFragment extends Fragment {
             @Override
             public void handleMessage(Message msg) {
                 listView.setAdapter(null);
-//                listView.setAdapter(new FriendsListAdapter(getListAccount(), context));
+                listView.setAdapter(new FriendsListAdapter(getListAccount(), context));
             }
         };
 
@@ -99,13 +103,13 @@ public class FriendsListFragment extends Fragment {
         timer.schedule(timerTask, 3000, 1500);
     }
 
-//    private List<FriendInfo> getListAccount() {
-//        List<FriendInfo> account = FirebaseHandle.getInstance().getListFriends();
-//        if(account == null) {
-//            account = new ArrayList<>();
-//        }
-//        return account;
-//    }
+    private List<FriendInfo> getListAccount() {
+        List<FriendInfo> account = FirebaseHandle.getInstance().getListFriends();
+        if(account == null) {
+            account = new ArrayList<>();
+        }
+        return account;
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -119,7 +123,7 @@ public class FriendsListFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.refresh_action) {
             listView.setAdapter(null);
-//            listView.setAdapter(new FriendsListAdapter(getListAccount(), context));
+            listView.setAdapter(new FriendsListAdapter(getListAccount(), context));
             Toast.makeText(context, getResources().getText(R.string.refresh_list_friends), Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);

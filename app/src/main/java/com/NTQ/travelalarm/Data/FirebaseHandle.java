@@ -121,7 +121,7 @@ public class FirebaseHandle {
     }
 
     public void setAccountListener() {
-        if(mRef.child(FB_ACCOUNT).child(userID).child(FB_FRIENDS) != null)
+//        if(mRef.child(FB_ACCOUNT).child(userID).child(FB_FRIENDS) != null)
         mRef.child(FB_ACCOUNT).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

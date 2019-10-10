@@ -1,6 +1,9 @@
 package com.NTQ.travelalarm.Service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.NTQ.travelalarm.Activity.AlarmActivity;
 import com.NTQ.travelalarm.Activity.MainActivity;
 import com.NTQ.travelalarm.Activity.SignIn;
 import com.NTQ.travelalarm.App;
@@ -21,6 +25,7 @@ import com.NTQ.travelalarm.Data.DatabaseHelper;
 import com.NTQ.travelalarm.Data.FirebaseHandle;
 import com.NTQ.travelalarm.Data.FriendInfo;
 import com.NTQ.travelalarm.Data.Route;
+import com.NTQ.travelalarm.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -74,7 +79,7 @@ public class AppService extends Service implements LocationListener,
 
     private void syncData() {
         //neu la lan dang nhap dau tien
-        if(SignIn.isLoginFirst) {
+        if (SignIn.isLoginFirst) {
             List<Route> routeList = FirebaseHandle.getInstance().getListRoute();
             DatabaseHelper dbHelper = new DatabaseHelper(AppService.this);
             dbHelper.deleteAllData();
@@ -91,18 +96,17 @@ public class AppService extends Service implements LocationListener,
             //cap nhat nhưng bao thuc tu may len firebase
             List<Route> listRoute = dbHelper.getListRoute("SELECT * FROM " + DatabaseHelper.TABLE_ROUTE);
 
-            for(Route route : listRoute) {
+            for (Route route : listRoute) {
                 try {
                     FirebaseHandle.getInstance().updateRoute(route);
-                }catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
 
 //            xoa nhung bao thuc ma trong may da xoa
             List<Route> firebaseRoute = FirebaseHandle.getInstance().getListRoute();
-            if(firebaseRoute != null) {
+            if (firebaseRoute != null) {
                 for (Route route : firebaseRoute) {
                     if (!isHasRoute(route, listRoute))
                         FirebaseHandle.getInstance().removeRoute(String.valueOf(route.getId()));
@@ -140,50 +144,48 @@ public class AppService extends Service implements LocationListener,
         //dong bo hoa du lieu
         syncData();
 
-//        List<FriendInfo> friends = FirebaseHandle.getInstance().getListFriends();
-//        if(friends != null) {
-//            for (FriendInfo friend: friends) {
-//                if(isNear(friend, location) && friend.isFollowing() && friend.isNotifying()) {
-//                    Location friendPos = new Location(LocationManager.GPS_PROVIDER);
-//
-//                    friendPos.setLatitude(friend.getLatitude());
-//                    friendPos.setLongitude(friend.getLongitude());
-//
-//                    if(friend.getRingtoneName().equals(""))
-//                    {
-//                        Notification.Builder noti = new Notification.Builder(this)
-//                                .setSmallIcon(R.drawable.ic_friends_white)
-//                                .setContentText(location.distanceTo(friendPos) + "m")
-//                                .setContentTitle(friend.getName() + " đang ở gần bạn");
-//                            noti.setAutoCancel(true);
-//                            noti.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-//                            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//                            manager.notify(1, noti.build());
-//
-//                        } else {
-//                        Intent intent = new Intent(AppService.this, AlarmActivity.class);
-//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        intent.putExtra("info", friend.getName() + " đang ở cách bạn " + location.distanceTo(friendPos) + " m");
-//                        intent.putExtra("ringtone", friend.getRingtoneName());
-//                        intent.putExtra("ringtonePath", friend.getRingtonePath());
-//                        startActivity(intent);
-//                    }
-////                    FirebaseHandle.getInstance().setNotifyFriend(friend.getId(), false);
-//
-//                    countNoti ++;
-//                    friendNear.add(friend);
-//                }
-////                if(!isNear(friend, location))
-////                {
-////                    FirebaseHandle.getInstance().setNotifyFriend(friend.getId(), true);
-////                }
-//
-//            }
-//        }
+        List<FriendInfo> friends = FirebaseHandle.getInstance().getListFriends();
+        if (friends != null) {
+            for (FriendInfo friend : friends) {
+                if (isNear(friend, location) && friend.isFollowing() && friend.isNotifying()) {
+                    Location friendPos = new Location(LocationManager.GPS_PROVIDER);
+
+                    friendPos.setLatitude(friend.getLatitude());
+                    friendPos.setLongitude(friend.getLongitude());
+
+                    if (friend.getRingtoneName().equals("")) {
+                        Notification.Builder noti = new Notification.Builder(this)
+                                .setSmallIcon(R.drawable.ic_friends_white)
+                                .setContentText(location.distanceTo(friendPos) + "m")
+                                .setContentTitle(friend.getName() + " đang ở gần bạn");
+                        noti.setAutoCancel(true);
+                        noti.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+                        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        manager.notify(1, noti.build());
+
+                    } else {
+                        Intent intent = new Intent(AppService.this, AlarmActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("info", friend.getName() + " đang ở cách bạn " + location.distanceTo(friendPos) + " m");
+                        intent.putExtra("ringtone", friend.getRingtoneName());
+                        intent.putExtra("ringtonePath", friend.getRingtonePath());
+                        startActivity(intent);
+                    }
+                    FirebaseHandle.getInstance().setNotifyFriend(friend.getId(), false);
+
+                    countNoti++;
+                    friendNear.add(friend);
+                }
+                if (!isNear(friend, location)) {
+                    FirebaseHandle.getInstance().setNotifyFriend(friend.getId(), true);
+                }
+
+            }
+        }
 
         try {
             if (countNoti >= 0) {
-                // MainActivity.notiCounter.setText(String.valueOf(countNoti));
+                MainActivity.notiCounter.setText(String.valueOf(countNoti));
                 MainActivity.UpdateNotiCounter((countNoti > 5) ? "5+" : String.valueOf(countNoti));
 
             }
@@ -262,6 +264,6 @@ public class AppService extends Service implements LocationListener,
             location.setLatitude(Double.parseDouble(lat));
             location.setLongitude(Double.parseDouble(lon));
         }
-        return currentLocation;
+        return location;
     }
 }
